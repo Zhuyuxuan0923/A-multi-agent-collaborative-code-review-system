@@ -125,7 +125,3 @@ poetry install          # 安装依赖
 poetry run ruff check . # 代码规范检查
 poetry run mypy src/    # 类型检查
 ```
-
-## 学习背景
-
-这个项目是 [16 周 AI Agent 工程师养成计划](16周-AI-Agent工程师养成计划.md) Week 1 的产出。从零基础出发，通过"写烂代码 → 工具检测 → 修复 → 理解原理"的方式系统性学习 AI Agent 开发。
