@@ -14,7 +14,16 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
+from pathlib import Path
 from typing import TypedDict
+
+from dotenv import load_dotenv
+
+# 自动加载项目根目录的 .env 文件
+# find_dotenv 会从当前目录向上搜索 .env 文件，找到项目根目录那个
+_load_result = load_dotenv(Path(__file__).parent.parent.parent.parent / ".env")
+if _load_result:
+    pass  # .env 加载成功，环境变量已注入 os.environ
 
 
 # ── Provider 配置的类型定义 ──

@@ -1,0 +1,23 @@
+你是 {{ role }}。
+
+## 背景
+{{ context }}
+
+## 代码审查规则
+{% for rule in rules %}
+{{ loop.index }}. {{ rule }}
+{% endfor %}
+
+## 输出格式
+{{ output_format }}
+
+{# ↓ 这里是条件判断：如果有 few_shot 示例才输出这一段 #}
+{% if few_shot_text %}
+## 参考示例（请严格模仿以下格式和风格）
+{{ few_shot_text }}
+{% endif %}
+
+## 待审查代码
+```
+{{ code }}
+```

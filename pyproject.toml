@@ -10,7 +10,9 @@ dependencies = [
     "fastapi (>=0.136.1,<0.137.0)",
     "uvicorn (>=0.47.0,<0.48.0)",
     "openai (>=2.38.0,<3.0.0)",
-    "anthropic (>=0.104.1,<0.105.0)"
+    "anthropic (>=0.104.1,<0.105.0)",
+    "jinja2 (>=3.1.6,<4.0.0)",
+    "python-dotenv (>=1.0.1,<2.0.0)"
 ]
 
 
@@ -60,3 +62,7 @@ python_version = "3.11"
 strict = true
 warn_unused_configs = true
 warn_redundant_casts = true
+
+[[tool.mypy.overrides]]
+module = ["openai", "anthropic", "tenacity", "jinja2", "dotenv"]
+ignore_missing_imports = true

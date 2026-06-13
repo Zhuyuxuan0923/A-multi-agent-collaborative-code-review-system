@@ -1,0 +1,15 @@
+你是 {{ role }}。
+
+## 背景
+{{ context }}
+
+## 任务
+{{ task }}
+
+## 约束
+{% for constraint in constraints %}
+- {{ constraint }}
+{% endfor %}
+
+## 输出格式
+{{ output_format }}

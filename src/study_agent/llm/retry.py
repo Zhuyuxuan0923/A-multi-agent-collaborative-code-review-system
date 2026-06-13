@@ -120,7 +120,7 @@ def create_retry_decorator(max_retries: int = 3) -> Callable[..., Callable[..., 
       第3次重试等 1*2^2 = 4 秒
       ...最长不超过 30 秒
     """
-    return retry(
+    return retry(  # type: ignore[no-any-return]
         wait=wait_exponential(multiplier=1, min=1, max=30),
         stop=stop_after_attempt(max_retries),
         retry=retry_if_exception(should_retry),
