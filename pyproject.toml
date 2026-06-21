@@ -12,7 +12,8 @@ dependencies = [
     "openai (>=2.38.0,<3.0.0)",
     "anthropic (>=0.104.1,<0.105.0)",
     "jinja2 (>=3.1.6,<4.0.0)",
-    "python-dotenv (>=1.0.1,<2.0.0)"
+    "python-dotenv (>=1.0.1,<2.0.0)",
+    "chromadb (>=1.5.9,<2.0.0)"
 ]
 
 
@@ -43,6 +44,7 @@ target-version = ["py311"]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
+exclude = ["*.j2"]
 
 [tool.ruff.lint]
 select = [
@@ -54,6 +56,10 @@ select = [
     "UP",  # pyupgrade
 ]
 
+[tool.ruff.lint.per-file-ignores]
+"src/study_agent/w3d5_generation_demo.py" = ["E501"]
+"src/study_agent/w3d4_retrieval_demo.py" = ["E501"]
+
 [tool.ruff.lint.isort]
 known-first-party = ["study_agent"]
 
@@ -64,5 +70,5 @@ warn_unused_configs = true
 warn_redundant_casts = true
 
 [[tool.mypy.overrides]]
-module = ["openai", "anthropic", "tenacity", "jinja2", "dotenv"]
+module = ["openai", "anthropic", "tenacity", "jinja2", "dotenv", "chromadb"]
 ignore_missing_imports = true
