@@ -1,0 +1,181 @@
+Week 4 阶段复盘 — 阶段一（W1-W4）结束，第一个作品交付
+======================================================================
+日期：2026-06-22
+主题：回顾 4 周学习成果，确认作品 1 交付物，为阶段二做准备
+
+
+零、阶段一总览
+===============
+
+目标回顾（摘自 16 周计划）：
+  "从'会用 API'到'能独立交付 RAG 应用'"
+
+四周路线：
+  Week 1: Python 工程化 + LLM API 深度掌握
+  Week 2: Prompt Engineering + 结构化输出 + Tool Calling
+  Week 3: RAG 基础 + 向量数据库 + 检索策略
+  Week 4: 作品 1 —— 个人知识库问答 Agent
+
+
+一、四周成果一览
+=================
+
+▶ 项目代码（src/study_agent/）
+
+  核心模块（7 个）：
+    config/     — 5 家 LLM Provider 配置、LLMConfig、AppConfig、环境变量管理
+    llm/        — LLMClient 统一客户端、重试机制（指数退避）、结构化输出提取
+    prompt/     — Jinja2 模板引擎、Few-Shot 管理、评测框架、50 条测试用例
+    tools/      — BaseTool / ToolCallLoop / Calculator / DateTime / TextStats
+    rag/        — 分块(3种策略) / Embedding(3级降级) / 混合检索(RRF) / 生成与引用
+    agent/      — PersonalQA Agent：整合以上全部，对话历史 + 多知识库管理
+    api/        — FastAPI 接口层：/upload /chat /kb /conversations 共 10 个端点
+
+  前端（frontend/）：
+    Next.js + shadcn/ui 聊天界面
+    — ChatArea / InputArea / Sidebar / MarkdownRenderer
+    — Markdown 渲染 + 代码语法高亮
+    — 知识库切换 + 对话历史管理
+
+▶ 测试（tests/）
+
+  61 个测试用例，全部通过：
+    test_chunking.py      — 15 个（分块策略 + 边界值 + 参数化）
+    test_agent.py          — 13 个（上传/问答/知识库管理/对话）
+    test_api.py            — 14 个（端点响应/边界/错误处理）
+    test_security.py       — 9 个（Prompt Injection 检测/输入净化/长度截断）
+    test_error_handling.py — 10 个（重试机制/错误分类/流式传输）
+
+▶ Git 提交记录
+
+  b554e2a Remove learning plan reference from README
+  a4810fa Week 4 Day 6: 项目收尾与作品包装
+  83fbf49 Remove binary .docx file from repo
+  59d686c Week 4: PersonalQA Agent — 作品 1 完整交付
+  6a55060 Week 3 Day 5: RAG 生成与引用
+  c5f1b41 Week 2: Prompt Engineering 全套工具链
+  2d41ecf Remove learning background section from README
+  ee814ba Remove personal learning files from repo
+  60bcad1 Week 1: agent-core 包结构
+
+  9 个提交，覆盖全部 4 周。
+
+▶ 学习日志
+
+  docs/week1/  — 7 天日志
+  docs/week2/  — 7 天日志 + 文章
+  docs/week3/  — 7 天日志 + RAG 全链路流程图 + 踩坑文章
+  docs/week4/  — 6 天日志（Day 1 设计、Day 2 后端、Day 3 前端、Day 4 特性、Day 5 测试、Day 6 收尾）
+  docs/llm-internals/ — 3 天（Tokenizer / Transformer / 训练流水线）
+
+  共 31 篇学习日志，约 15 万字的思考笔记。
+
+
+二、作品 1 检验清单
+====================
+
+对照计划里的检验标准逐条自检：
+
+  [x] 代码推送到 GitHub（https://github.com/Zhuyuxuan0923/agentcore）
+  [x] README 清晰可读（六要素齐全：描述、架构图、快速开始、API 文档、项目结构、设计决策）
+  [x] .env.example 提供环境变量模板
+  [x] clone 下来能跑通（poetry install -> 配 .env -> 启动后端 -> 启动前端）
+  [x] 61 个测试用例全部通过
+  [x] 覆盖核心模块（分块/检索/生成/引用/对话）和安全边界
+  [x] 界面是 Warm Scholar 暖色调主题（shadcn/ui 定制）
+  [ ] 10 个测试问题的回答准确率 > 70%，引用全部可追溯 —— 留到 Week 6 正式评测
+
+▶ 5 分钟演示能力
+
+  可以演示：
+    1. 启动后端 -> 打开 Swagger UI -> 上传文件 -> 调用 /api/chat
+    2. 启动前端 -> 创建知识库 -> 上传 PDF -> 提问 -> 看到 Markdown 渲染 + 代码高亮 + 引用 Badge
+    3. 切换知识库 -> 多轮对话 -> 查看历史记录
+
+  这 3 个流程在面试里 5 分钟足够展示。
+
+
+三、技术栈矩阵（4 周累计）
+===========================
+
+  层级             | 已掌握                                          | 待加强
+  ----------------|-------------------------------------------------|------------------
+  Python 基础      | async/await, dataclass, 类型标注, pytest          | 装饰器进阶, 元类
+  API 开发         | FastAPI 路由/校验/错误处理/CORS, SSE 流式          | WebSocket, 中间件
+  LLM 调用         | 5 家 provider 统一封装, 流式/非流式, 重试机制       | Batch API, Token 预算
+  Prompt 工程      | Jinja2 模板, Few-Shot, 结构化输出, 评测           | Prompt 自动优化, A/B 测试
+  Tool Calling     | 双协议循环(OpenAI+Anthropic), builtin_tools        | MCP 协议
+  RAG              | 分块/Embedding/检索/生成/引用, 混合检索+RRF         | 多模态 RAG, Graph RAG
+  向量数据库        | ChromaDB CRUD, Collection 管理, 相似度阈值          | Milvus/Qdrant
+  前端             | Next.js 页面/组件/状态管理, Markdown 渲染           | 路由/SSR/状态管理进阶
+  工程化           | Poetry, Black, Ruff, MyPy, Pre-commit, pytest      | CI/CD, Docker
+  安全             | Prompt Injection 检测, 输入净化, System Prompt 加固  | Guardrails, 审计日志
+
+
+四、心态检查
+=============
+
+▶ 有没有陷入"教程地狱"？
+
+  前 4 周每个概念都落地了代码。不是"看完了课程"，而是"做出了东西"。
+  Week 1 的 LLMClient、Week 2 的 Prompt 模板、Week 3 的 RAG 管道，
+  最终都整合进了 Week 4 的 PersonalQA Agent——不是散装的知识点，是贯通的产品。
+
+  这一点做得不错。
+
+▶ 有没有因为完美主义拖延？
+
+  Week 4 Day 5 的安全防护只做了基础层（关键词检测 + System Prompt 加固），
+  没有追求"完美防护"。Day 6 部署被移到后续周次。这些都是合理的取舍。
+
+  阶段一的关键是"交付"，不是"完美"。做到了。
+
+▶ 倦怠感检测
+
+  4 周连续学习 + 编码，强度不小。如果感到累，这是正常的。
+  阶段二开始前可以休息一天，或者用 Day 7 做轻量复盘就好。
+
+▶ 与前几周对比的进步
+
+  Week 1: 不知道什么是 Git、什么是命令行
+  Week 2: 能写 System Prompt、能用 Jinja2 模板
+  Week 3: 理解了 Embedding、向量检索、RRF 融合
+  Week 4: 独立交付了一个前后端完整的 AI 应用
+
+  4 周前你可能不知道 Python 项目怎么组织，
+  现在你的 GitHub 上有一个 95 个文件的结构化项目 + 61 个测试。
+
+
+五、阶段二预告
+===============
+
+Week 5-8 的核心目标：掌握多 Agent 协作与工具编排。
+
+  Week 5: Agent 框架深度使用（ReAct / Plan-Execute / LangGraph / CrewAI）
+  Week 6: Memory + 多轮对话 + Agent 评估
+  Week 7: 多 Agent 架构设计
+  Week 8: 作品 2 —— 多 Agent 代码审查系统
+
+进入阶段二前，建议确认：
+  1. [ ] LLMClient 能熟练切换 provider（本机 5 家都能调通）
+  2. [ ] RAG 全链路能在纸上画出数据流（上传 -> 分块 -> 向量化 -> 检索 -> 生成 -> 引用）
+  3. [ ] System Prompt 设计三要素烂熟（角色、约束、输出格式）
+  4. [ ] ChromaDB 的 add/query/delete 操作能脱离文档手写
+
+如果以上有哪项不熟练，花半天补上再进入 Week 5。
+
+
+六、今日自检（逐条确认）
+==========================
+
+[ ] 能说出 4 周的技术栈矩阵（每个层级的掌握程度）
+[ ] 确认 GitHub 仓库有连续提交记录
+[ ] 确认 README 能让陌生人 3 分钟看懂项目
+[ ] 确认 61 个测试全部通过
+[ ] 确认 clone -> install -> run 全流程可跑通
+[ ] 心态检查：没有陷入教程地狱，没有完美主义拖延
+[ ] 知道阶段二要做什么（Week 5-8 多 Agent 协作）
+[ ] 知道自己的薄弱点（对照技术栈矩阵的"待加强"列）
+
+---
+阶段一结束。休息一下，准备进入阶段二。
