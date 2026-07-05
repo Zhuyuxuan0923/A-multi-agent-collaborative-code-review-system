@@ -83,7 +83,11 @@ class GitHubClient:
         result: dict[str, Any] = response.json()
         return result
 
-    def get_raw(self, path: str) -> httpx.Response:
+    def get_raw(
+        self,
+        path: str,
+        headers: dict[str, str] | None = None,
+    ) -> httpx.Response:
         """Send a GET request and return the raw Response object.
 
         Useful for endpoints that return non-JSON bodies, e.g. diff text from
@@ -91,6 +95,9 @@ class GitHubClient:
 
         Args:
             path: API path relative to base_url.
+            headers: Optional extra headers merged on top of the client defaults.
+                     Used for endpoints that need a different Accept header, e.g.
+                     ``{"Accept": "application/vnd.github.v3.diff"}`` for PR diffs.
 
         Returns:
             The raw httpx.Response object (caller must check status).
@@ -99,7 +106,7 @@ class GitHubClient:
             httpx.RequestError: On network-level errors. Does NOT raise on 4xx/5xx
                                 -- caller should inspect response.status_code.
         """
-        return self._client.get(path)
+        return self._client.get(path, headers=headers or {})
 
     def post(self, path: str, json_data: dict[str, Any]) -> dict[str, Any]:
         """Send a POST request with a JSON body and return parsed JSON.
