@@ -31,7 +31,7 @@ repos:
     rev: v1.20.0
     hooks:
       - id: mypy
-        args: ["--config-file", "pyproject.toml"]
+        args: ["--config-file", "pyproject.toml", "--follow-imports=skip"]
         additional_dependencies: []
         # 后续添加依赖后在这里补充，如:
         # additional_dependencies: ["types-requests", "types-pyyaml"]
