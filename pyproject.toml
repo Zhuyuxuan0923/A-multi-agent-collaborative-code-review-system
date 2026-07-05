@@ -17,7 +17,11 @@ dependencies = [
     "python-multipart (>=0.0.32,<0.0.33)",
     "python-docx (>=1.2.0,<2.0.0)",
     "pypdf2 (>=3.0.1,<4.0.0)",
-    "sentence-transformers (>=5.6.0,<6.0.0)"
+    "sentence-transformers (>=5.6.0,<6.0.0)",
+    "langchain (>=0.3.0,<0.4.0)",
+    "langgraph (>=1.2.0,<2.0.0)",
+    "tiktoken (>=0.7.0,<1.0.0)",
+    "httpx (>=0.28.1,<0.29.0)"
 ]
 
 
@@ -39,6 +43,7 @@ dev = [
     "pre-commit (>=4.6.0,<5.0.0)",
     "tenacity (>=9.1.4,<10.0.0)",
     "pytest (>=9.0.3,<10.0.0)",
+    "pytest-httpx (>=0.36.2,<0.37.0)",
 ]
 
 [tool.black]
@@ -113,6 +118,9 @@ module = [
     "sentence_transformers",
     "docx",
     "PyPDF2",
+    "httpx",
+    "pytest",
+    "pytest_httpx",
 ]
 ignore_missing_imports = true
 
