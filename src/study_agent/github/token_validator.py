@@ -63,11 +63,11 @@ class PATValidator:
 
         client = GitHubClient(token=token)
         try:
-            resp = client.get_raw("/user")
-        except httpx.RequestError as exc:
-            return TokenValidationResult(valid=False, error=f"network error: {exc}")
+            try:
+                resp = client.get_raw("/user")
+            except httpx.RequestError as exc:
+                return TokenValidationResult(valid=False, error=f"network error: {exc}")
 
-        try:
             if resp.status_code == 200:
                 data: dict[str, Any] = resp.json()
                 username: str = data.get("login", "")
