@@ -38,7 +38,7 @@ CLAUDE.md
 docs/week*/
 
 # Large data files
-数据结构和算法.html
+*.html
 
 # Superpowers local cache
 .superpowers/
