@@ -53,11 +53,14 @@ class ReviewRequest(BaseModel):
     )
     github_token: str | None = Field(
         default=None,
+        max_length=200,
         description="Optional: GitHub PAT for PR comment",
     )
     pr_url: str | None = Field(
         default=None,
-        description="Optional: related PR URL",
+        max_length=200,
+        pattern=r"^(|https?://github\.com/[^/]+/[^/]+/pull/\d+/?)$",
+        description="Optional: related PR URL (GitHub only)",
     )
 
 
@@ -67,11 +70,15 @@ class PRReviewRequest(BaseModel):
     pr_url: str = Field(
         ...,
         min_length=1,
-        description="GitHub PR URL",
+        max_length=200,
+        pattern=r"^https?://github\.com/[^/]+/[^/]+/pull/\d+/?$",
+        description="GitHub PR URL, e.g. https://github.com/owner/repo/pull/42. "
+        "Only GitHub PR URLs are accepted. Invalid URLs are rejected at the API boundary.",
     )
     github_token: str = Field(
         ...,
         min_length=1,
+        max_length=200,
         description="GitHub Personal Access Token",
     )
 

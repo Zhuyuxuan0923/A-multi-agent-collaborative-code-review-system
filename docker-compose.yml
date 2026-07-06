@@ -1,0 +1,32 @@
+services:
+  backend:
+    build: .
+    container_name: code-review-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-sk-placeholder}
+      - LLM_PROVIDER=${LLM_PROVIDER:-deepseek}
+      - DB_PATH=/app/data/reviews.db
+    volumes:
+      - review_data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  frontend:
+    build: ./frontend
+    container_name: code-review-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  review_data:

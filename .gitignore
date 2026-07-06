@@ -35,8 +35,17 @@ CLAUDE.md
 16*.md
 16*.html
 *.docx
+docs/week*/
+
 # Large data files
 数据结构和算法.html
+
+# Superpowers local cache
+.superpowers/
+
+# Local data
+data/
+0.80.0
 
 # OS
 .DS_Store

@@ -181,7 +181,7 @@ def test_submit_pr_review_failed_fetch_returns_400() -> None:
     mock_tm.get_task.return_value = {
         "id": "failed123abc",
         "status": "failed",
-        "error": "Failed to fetch PR diff: Invalid GitHub URL: gitlab.com/...",
+        "error": "Failed to fetch PR diff: GitHub API returned 404: Not Found",
         "created_at": "2026-07-05T10:00:00Z",
         "progress": None,
     }
@@ -191,13 +191,13 @@ def test_submit_pr_review_failed_fetch_returns_400() -> None:
         response = client.post(
             "/api/review/pr",
             json={
-                "pr_url": "https://gitlab.com/not/github",
-                "github_token": "fake",
+                "pr_url": "https://github.com/fake/fake/pull/1",
+                "github_token": "ghp_faketoken12345",
             },
         )
 
     assert response.status_code == 400
-    assert "Invalid GitHub URL" in response.json()["detail"]
+    assert "Failed to fetch PR diff" in response.json()["detail"]
 
 
 # ============================================================================

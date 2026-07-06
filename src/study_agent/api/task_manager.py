@@ -172,7 +172,7 @@ class TaskManager:
         return {
             "task_id": task_id,
             "report_md": task.get("report_md", ""),
-            "score": task.get("score", 0),
+            "score": task.get("score", -1),
             "issues": issues,
             "technologies": technologies,
             "reviewed_by": ["reviewer", "researcher", "reporter"],

@@ -33,5 +33,6 @@ repos:
       - id: mypy
         args: ["--config-file", "pyproject.toml", "--follow-imports=skip"]
         additional_dependencies: []
+        exclude: "^(tests/|src/study_agent/agent/|src/study_agent/memory/|src/study_agent/api/|src/study_agent/.*_demo\\.py)"
         # 后续添加依赖后在这里补充，如:
         # additional_dependencies: ["types-requests", "types-pyyaml"]

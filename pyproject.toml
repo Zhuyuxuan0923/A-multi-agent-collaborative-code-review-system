@@ -82,6 +82,47 @@ select = [
 "src/study_agent/jinja2_demo.py" = ["E501"]
 "src/study_agent/prompt/demo.py" = ["E501"]
 
+# Week 5-7 学习代码 — 含长 prompt 文本和结构化文档，豁免 E501
+# Week 5-7 学习代码 — 含长 prompt 文本，豁免 E501；demo 文件豁免 F841/UP042
+"src/study_agent/adversarial_demo.py" = ["E402"]
+"src/study_agent/agent/adversarial_cases.py" = ["E501"]
+"src/study_agent/agent/adversarial_tester.py" = ["E501"]
+"src/study_agent/agent/agent_eval_cases.py" = ["E501"]
+"src/study_agent/agent/agent_evaluator.py" = ["E501"]
+"src/study_agent/agent/agent_guard.py" = ["E501"]
+"src/study_agent/agent/autogen_research_team.py" = ["E402"]
+"src/study_agent/agent/bus_orchestrator.py" = ["E501"]
+"src/study_agent/agent/bus_orchestrator_demo.py" = ["E501"]
+"src/study_agent/agent/code_review_agents.py" = ["E501"]
+"src/study_agent/agent/code_review_demo.py" = ["E501"]
+"src/study_agent/agent/communication_demo.py" = ["E501", "F841"]
+"src/study_agent/agent/conflict_resolver.py" = ["E501"]
+"src/study_agent/agent/conflict_resolver_demo.py" = ["E501"]
+"src/study_agent/agent/crewai_research_crew.py" = ["E501"]
+"src/study_agent/agent/framework_guide.py" = ["E501"]
+"src/study_agent/agent/integration_test.py" = ["E501"]
+"src/study_agent/agent/langgraph_router.py" = ["E501"]
+"src/study_agent/agent/message_bus.py" = ["E501"]
+"src/study_agent/agent/message_protocol.py" = ["E501", "UP042"]
+"src/study_agent/agent/plan_execute_agent.py" = ["E501"]
+"src/study_agent/agent/react_agent.py" = ["E501"]
+"src/study_agent/agent/research_tools.py" = ["E501"]
+"src/study_agent/agent/state.py" = ["E501", "UP042"]
+"src/study_agent/agent/state_demo.py" = ["E501", "F841"]
+"src/study_agent/agent/trace.py" = ["E501"]
+"src/study_agent/agent/trace_exporter.py" = ["E501"]
+"src/study_agent/agent/traced_agent.py" = ["E501"]
+"src/study_agent/agent_evaluation_demo.py" = ["E501"]
+"src/study_agent/agent_trace_demo.py" = ["E501", "F841"]
+"src/study_agent/framework_guide_demo.py" = ["E501"]
+"src/study_agent/langgraph_router_demo.py" = ["E501"]
+"src/study_agent/memory/demo.py" = ["E501"]
+"src/study_agent/memory/comparator.py" = ["E501"]
+"src/study_agent/memory/hybrid_demo.py" = ["E501"]
+"src/study_agent/multi_agent_demo.py" = ["E501"]
+"src/study_agent/plan_execute_demo.py" = ["E501", "F841"]
+"src/study_agent/react_vs_fc_demo.py" = ["E501"]
+
 [tool.ruff.lint.isort]
 known-first-party = ["study_agent"]
 
@@ -91,6 +132,7 @@ strict = true
 warn_unused_configs = true
 warn_redundant_casts = true
 # 排除 demo 脚本、测试文件、FastAPI 路由（装饰器丢失类型信息）
+# Week 5-7 学习代码整体排除 (含大量实验性 Agent/Memory/State 实现)
 exclude = [
     "tests/",
     "src/study_agent/api/",
@@ -103,6 +145,9 @@ exclude = [
     "src/study_agent/day5_self_check\\.py",
     "src/study_agent/llm_client\\.py",
     "src/study_agent/prompt/demo\\.py",
+    "src/study_agent/agent/",
+    "src/study_agent/memory/",
+    "src/study_agent/.*_demo\\.py",
 ]
 
 [[tool.mypy.overrides]]

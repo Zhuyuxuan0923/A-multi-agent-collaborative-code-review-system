@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Virtual env
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Environment (contains secrets — passed via docker-compose instead)
+.env
+
+# Node (frontend has its own Dockerfile)
+frontend/
+node_modules/
+
+# Tests and dev tools
+tests/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Docs and plans
+docs/
+*.html
+
+# Temp files
+*.tmp
+*.log

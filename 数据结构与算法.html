@@ -1,0 +1,1712 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数据结构与算法 — 从零开始讲透彻</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ====== CSS Variables ====== */
+:root {
+  --bg-deep: #eef1f5;
+  --bg-primary: #f5f6f8;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f0f4ff;
+  --bg-elevated: #e8ecf1;
+  --border: #e2e8f0;
+  --border-active: #c4cdd9;
+  --text-primary: #1a202c;
+  --text-secondary: #4a5568;
+  --text-muted: #94a3b8;
+  --blue: #0284c7;
+  --blue-dim: #e0f2fe;
+  --purple: #7c3aed;
+  --purple-dim: #ede9fe;
+  --pink: #db2777;
+  --pink-dim: #fce7f3;
+  --green: #059669;
+  --green-dim: #d1fae5;
+  --yellow: #d97706;
+  --yellow-dim: #fef3c7;
+  --red: #dc2626;
+  --red-dim: #fee2e2;
+  --easy: #16a34a;
+  --mid: #d97706;
+  --hard: #dc2626;
+  --amber: #f59e0b;
+  --amber-dim: #fef3c7;
+  --orange: #ea580c;
+  --orange-dim: #ffedd5;
+  --font-display: 'Outfit', 'Noto Sans SC', sans-serif;
+  --font-body: 'Noto Sans SC', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ====== Reset & Base ====== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Background pattern */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(2, 132, 199, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 40%, rgba(124, 58, 237, 0.05) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 80%, rgba(219, 39, 119, 0.04) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 10%, rgba(5, 150, 105, 0.05) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Grid texture */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(180, 190, 210, 0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(180, 190, 210, 0.15) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+  mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
+}
+
+/* ====== App Shell ====== */
+.app { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 20px 24px 60px; }
+
+/* ====== Hero ====== */
+.hero {
+  text-align: center;
+  padding: 48px 20px 36px;
+  position: relative;
+}
+.hero-icon {
+  width: 56px; height: 56px;
+  background: linear-gradient(135deg, var(--blue-dim), var(--purple-dim));
+  border: 1px solid var(--border-active);
+  border-radius: 16px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 28px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 12px rgba(2,132,199,0.08);
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #1e40af 0%, #5b21b6 50%, #be185d 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero .subtitle {
+  color: var(--text-secondary);
+  font-size: 15px;
+  margin-top: 8px;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+}
+
+/* ====== Section Labels ====== */
+.section-label {
+  display: flex; align-items: center; gap: 10px;
+  margin: 36px 0 14px;
+  padding-left: 4px;
+}
+.section-label .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  flex-shrink: 0;
+}
+.section-label span {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* ====== Card Grid ====== */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 17px 16px;
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+.card.blue::before { background: var(--blue); }
+.card.purple::before { background: var(--purple); }
+.card.pink::before { background: var(--pink); }
+.card.amber::before { background: var(--orange); }
+.card.green::before { background: var(--green); }
+.card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-active);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+}
+.card:hover::before { opacity: 1; }
+.card .emoji { font-size: 22px; margin-bottom: 8px; display: block; }
+.card h3 {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 3px;
+}
+.card .desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+.card .badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 100px;
+  margin-top: 8px;
+  letter-spacing: 0.03em;
+}
+.badge-easy { background: var(--green-dim); color: var(--easy); }
+.badge-mid { background: var(--yellow-dim); color: var(--mid); }
+.badge-hard { background: var(--red-dim); color: var(--hard); }
+.badge-read { background: var(--amber-dim); color: var(--orange); }
+
+/* ====== Detail View ====== */
+.detail-view { display: none; }
+.detail-view.active { display: block; }
+
+/* Nav bar */
+.detail-nav {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.detail-nav .back-btn {
+  background: none; border: 1px solid var(--border);
+  color: var(--text-primary); font-size: 14px;
+  width: 34px; height: 34px; border-radius: 8px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all var(--transition);
+  font-family: var(--font-body);
+}
+.detail-nav .back-btn:hover {
+  background: var(--bg-elevated);
+  border-color: var(--border-active);
+}
+.detail-nav .breadcrumb {
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+.detail-nav .breadcrumb .accent { color: var(--text-secondary); }
+.detail-nav .chapter-title {
+  font-family: var(--font-display);
+  font-size: 15px; font-weight: 700;
+  margin-left: 4px;
+}
+.detail-nav .spacer { flex: 1; }
+.detail-nav .progress {
+  font-size: 11px; color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+.detail-nav .badge { margin-top: 0; }
+
+/* Concept block */
+.concept-block {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-bottom: 12px;
+}
+.concept-block h3 {
+  font-family: var(--font-display);
+  font-size: 16px; font-weight: 700;
+  margin-bottom: 8px;
+}
+.concept-block p {
+  font-size: 13px; color: var(--text-secondary);
+  line-height: 1.8;
+}
+.concept-block .highlight {
+  color: var(--yellow);
+  font-weight: 500;
+}
+.complexity-table {
+  display: flex; gap: 16px; flex-wrap: wrap;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.complexity-table .tc {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.complexity-table .tc.good { color: var(--easy); }
+.complexity-table .tc.ok { color: var(--yellow); }
+.complexity-table .tc.slow { color: var(--red); }
+
+/* Viz block */
+.viz-block {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 12px;
+}
+.viz-block .viz-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+.viz-container {
+  min-height: 180px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.viz-container canvas {
+  display: block;
+}
+.viz-container .viz-dom {
+  display: flex; align-items: center; justify-content: center;
+  flex-wrap: wrap; gap: 0;
+}
+.viz-hint {
+  text-align: center; font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 8px;
+  min-height: 18px;
+}
+
+/* Step controls */
+.step-controls {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; margin-top: 10px;
+}
+.step-controls button {
+  font-family: var(--font-body);
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.step-controls button:hover { border-color: var(--border-active); background: var(--bg-card-hover); }
+.step-controls button:active { transform: scale(0.97); }
+.step-controls button.primary { background: #1d4ed8; border-color: #1d4ed8; color: white; }
+.step-controls button.primary:hover { background: #2563eb; }
+.step-controls .step-indicator {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  min-width: 70px; text-align: center;
+}
+.step-controls button:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* Code comparison */
+.code-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+@media (max-width: 640px) { .code-compare { grid-template-columns: 1fr; } }
+.code-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  overflow-x: auto;
+}
+.code-panel .lang-label {
+  font-family: var(--font-display);
+  font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+.code-panel pre {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.8;
+  color: #334155;
+  white-space: pre-wrap; word-break: break-all;
+}
+.code-panel .kw { color: #7c3aed; }
+.code-panel .fn { color: #0369a1; }
+.code-panel .str { color: #059669; }
+.code-panel .num { color: #d97706; }
+.code-panel .cm { color: #94a3b8; font-style: italic; }
+.code-panel .arrow { color: #db2777; }
+
+/* Bottom nav */
+.bottom-nav {
+  display: flex; justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  margin-bottom: 40px;
+}
+.bottom-nav a {
+  color: var(--text-secondary);
+  font-size: 12px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color var(--transition);
+}
+.bottom-nav a:hover { color: var(--text-primary); }
+.bottom-nav a.next { color: var(--blue); font-weight: 600; }
+
+/* ====== Footer ====== */
+.footer {
+  text-align: center; padding: 16px 0 20px;
+  color: var(--text-muted); font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+/* ====== Animations ====== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.card {
+  animation: fadeInUp 0.5s ease backwards;
+}
+.card:nth-child(1) { animation-delay: 0.02s; }
+.card:nth-child(2) { animation-delay: 0.06s; }
+.card:nth-child(3) { animation-delay: 0.10s; }
+.card:nth-child(4) { animation-delay: 0.14s; }
+.card:nth-child(5) { animation-delay: 0.18s; }
+
+/* Node styles for DOM-based viz */
+.viz-node {
+  display: inline-flex; align-items: center;
+  background: var(--blue-dim);
+  border: 2px solid var(--blue);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--blue);
+  position: relative;
+  transition: all 0.3s ease;
+}
+.viz-node.highlight {
+  border-color: var(--green);
+  background: var(--green-dim);
+  color: var(--green);
+  box-shadow: 0 0 16px rgba(5,150,105,0.2);
+  transform: scale(1.08);
+  z-index: 2;
+}
+.viz-node.inserting {
+  border-color: var(--yellow);
+  background: var(--yellow-dim);
+  color: var(--yellow);
+  animation: pulse 0.6s ease infinite;
+}
+.viz-arrow {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 18px;
+  margin: 0 2px;
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 rgba(217,119,6,0); }
+  50% { box-shadow: 0 0 20px rgba(217,119,6,0.2); }
+}
+
+/* Array cell */
+.viz-cell {
+  display: inline-flex; flex-direction: column; align-items: center;
+  min-width: 44px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-active);
+  border-radius: 6px;
+  padding: 8px 6px 4px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+.viz-cell .idx {
+  font-size: 9px; color: var(--text-muted);
+  margin-top: 2px;
+}
+.viz-cell.highlight {
+  border-color: var(--green);
+  background: var(--green-dim);
+  color: var(--green);
+  box-shadow: 0 0 12px rgba(5,150,105,0.18);
+}
+.viz-cell.comparing {
+  border-color: var(--yellow);
+  background: var(--yellow-dim);
+  color: var(--yellow);
+}
+
+/* Stack/queue container */
+.viz-stack {
+  display: flex; flex-direction: column-reverse; align-items: center; gap: 3px;
+}
+.viz-stack-item {
+  background: var(--blue-dim);
+  border: 1.5px solid var(--blue);
+  border-radius: 6px;
+  padding: 6px 20px;
+  font-family: var(--font-mono);
+  font-size: 13px; font-weight: 600;
+  color: var(--blue);
+  transition: all 0.3s ease;
+  min-width: 60px; text-align: center;
+}
+.viz-stack-item.top {
+  border-color: var(--green);
+  background: var(--green-dim);
+  color: var(--green);
+}
+.viz-stack-item.incoming {
+  animation: fadeInUp 0.3s ease;
+  border-color: var(--yellow);
+  background: var(--yellow-dim);
+  color: var(--yellow);
+}
+
+/* Hash table */
+.viz-hash {
+  display: flex; gap: 4px; flex-wrap: wrap; justify-content: center;
+}
+.viz-bucket {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-active);
+  border-radius: 6px;
+  padding: 6px 10px;
+  min-width: 60px; text-align: center;
+}
+.viz-bucket .bucket-idx {
+  font-size: 9px; color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+.viz-bucket .bucket-val {
+  font-family: var(--font-mono);
+  font-size: 12px; font-weight: 600;
+  color: var(--text-primary);
+}
+.viz-bucket.highlight {
+  border-color: var(--yellow);
+  background: var(--yellow-dim);
+}
+.viz-bucket.highlight .bucket-val { color: var(--yellow); }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Home View -->
+  <div id="home-view">
+    <div class="hero">
+      <div class="hero-icon">⚙️</div>
+      <h1>数据结构与算法</h1>
+      <p class="subtitle">从零开始，把每一个结构讲透彻</p>
+    </div>
+
+    <div class="section-label"><div class="dot" style="background:var(--orange)"></div><span style="color:var(--orange)">前置知识</span></div>
+    <div class="card-grid" id="grid-primer"></div>
+
+    <div class="section-label"><div class="dot" style="background:var(--blue)"></div><span style="color:var(--blue)">线性结构</span></div>
+    <div class="card-grid" id="grid-linear"></div>
+
+    <div class="section-label"><div class="dot" style="background:var(--purple)"></div><span style="color:var(--purple)">树形结构</span></div>
+    <div class="card-grid" id="grid-tree"></div>
+
+    <div class="section-label"><div class="dot" style="background:var(--pink)"></div><span style="color:var(--pink)">图与散列</span></div>
+    <div class="card-grid" id="grid-hashgraph"></div>
+
+    <div class="section-label"><div class="dot" style="background:var(--green)"></div><span style="color:var(--green)">算法</span></div>
+    <div class="card-grid" id="grid-algo"></div>
+
+    <div class="footer">学完 14 章，你就有了扎实的数据结构与算法基础</div>
+  </div>
+
+  <!-- Detail View -->
+  <div class="detail-view" id="detail-view">
+    <div class="detail-nav" id="detail-nav"></div>
+    <div class="concept-block" id="concept-block"></div>
+    <div class="viz-block">
+      <div class="viz-label">🎬 动画演示</div>
+      <div class="viz-container" id="viz-container"></div>
+      <div class="viz-hint" id="viz-hint"></div>
+      <div class="step-controls" id="step-controls">
+        <button id="btn-prev" disabled>◀ 上一步</button>
+        <span class="step-indicator" id="step-indicator">步骤 1 / 4</span>
+        <button id="btn-next" class="primary">下一步 ▶</button>
+        <button id="btn-reset">↺ 重置</button>
+      </div>
+    </div>
+    <div class="code-compare" id="code-compare"></div>
+    <div class="bottom-nav" id="bottom-nav"></div>
+  </div>
+</div>
+
+<script>
+// ==========================================================================
+//  DATA
+// ==========================================================================
+const CHAPTERS = [
+  // --- 前置知识 (amber) ---
+  {
+    id: 'big-o', section: 'primer', color: 'var(--orange)', colorClass: 'amber',
+    emoji: '⏱️', title: '复杂度分析', desc: '大O表示法 · 时空权衡 · 增长率对比',
+    difficulty: '必读', diffClass: 'badge-read', index: 0,
+    concept: `<h3>什么是复杂度分析？</h3>
+      <p>复杂度分析是衡量算法<span class="highlight">效率</span>的工具。它不关心具体多少秒，而是关注：<span class="highlight">数据量 n 变大时，执行时间/内存如何增长？</span></p>
+      <p style="margin-top:8px"><span class="highlight">大 O 表示法</span>描述的是「增长趋势」，忽略常数和低阶项。O(2n+3) 简写为 O(n)；O(n²+100n) 简写为 O(n²)。因为当 n 很大时，常数和低阶项的影响微乎其微。</p>
+      <p style="margin-top:8px"><span class="highlight">时间复杂度</span>衡量运行时间随 n 的增长；<span class="highlight">空间复杂度</span>衡量额外内存随 n 的增长。二者常常需要权衡——用空间换时间（如哈希表），或用时间换空间。</p>
+      <div class="complexity-table" style="flex-direction:column;gap:4px">
+        <span class="tc good">O(1) 常数 — 无论 n 多大，一步完成（数组索引访问）</span>
+        <span class="tc good">O(log n) 对数 — 每次排除一半（二分搜索）</span>
+        <span class="tc ok">O(n) 线性 — 每个元素看一遍（遍历数组）</span>
+        <span class="tc ok">O(n log n) 线性对数 — 最优比较排序的下界（快排、归并）</span>
+        <span class="tc slow">O(n²) 平方 — 嵌套循环（冒泡排序、简单匹配）</span>
+      </div>`,
+    steps: [
+      { desc: '增长率对比：横轴=数据量 n，纵轴=操作次数。看各曲线随 n 增大如何变化' },
+      { desc: 'O(1) 是一条水平线——无论 n 多大，1 步搞定。O(log n) 几乎平缓，增长极慢' },
+      { desc: 'O(n) 是45°直线——n 翻倍，时间翻倍。O(n²) 是抛物线——n 翻 10 倍，时间翻 100 倍！' },
+      { desc: '结论：写代码时，避免 O(n²) 及以上的算法。O(log n) ≈ O(1) 几乎一样快' },
+    ],
+    getPseudo: () => `复杂度比较（n=100 时）:
+O(1)        → 1 次
+O(log n)    → ~7 次
+O(n)        → 100 次
+O(n log n)  → ~700 次
+O(n²)       → 10,000 次`,
+    getCode: () => `// O(1) — 无论数组多大，一次定位
+let x = arr[42];
+
+// O(n) — 遍历，每个元素看一遍
+for (let v of arr) console.log(v);
+
+// O(n²) — 嵌套循环，每对元素比较一次
+for (let i=0; i<n; i++)
+  for (let j=0; j<n; j++)
+    compare(arr[i], arr[j]);
+
+// O(log n) — 二分法，每次砍一半
+while (lo <= hi) {
+  let mid = (lo+hi)>>1;
+  if (arr[mid]===t) return mid;
+  if (arr[mid]<t) lo=mid+1;
+  else hi=mid-1;
+}`,
+    renderViz(stepIdx) {
+      const c = document.getElementById('viz-container'); c.innerHTML = '';
+      const canvas = document.createElement('canvas');
+      canvas.width = 560; canvas.height = 260;
+      canvas.style.maxWidth = '100%';
+      c.appendChild(canvas);
+      const ctx = canvas.getContext('2d');
+      const pad = { l: 50, r: 20, t: 20, b: 35 };
+      const w = canvas.width - pad.l - pad.r;
+      const h = canvas.height - pad.t - pad.b;
+
+      // Background
+      ctx.fillStyle = '#f8f9fb'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Grid
+      ctx.strokeStyle = '#e8ecf1'; ctx.lineWidth = 1;
+      for (let i = 0; i <= 5; i++) {
+        const y = pad.t + h * i / 5;
+        ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + w, y); ctx.stroke();
+      }
+      for (let i = 0; i <= 5; i++) {
+        const x = pad.l + w * i / 5;
+        ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, pad.t + h); ctx.stroke();
+      }
+
+      // Axes
+      ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, pad.t + h); ctx.lineTo(pad.l + w, pad.t + h); ctx.stroke();
+
+      // Labels
+      ctx.fillStyle = '#64748b'; ctx.font = '10px "Noto Sans SC"'; ctx.textAlign = 'center';
+      for (let i = 0; i <= 5; i++) {
+        ctx.fillText(i * 20, pad.l + w * i / 5, pad.t + h + 18);
+      }
+      ctx.fillText('n (数据量)', pad.l + w / 2, pad.t + h + 32);
+      ctx.save(); ctx.translate(12, pad.t + h / 2); ctx.rotate(-Math.PI / 2);
+      ctx.fillText('操作次数', 0, 0); ctx.restore();
+
+      // Curves
+      const maxN = 100;
+      const toX = (n) => pad.l + (n / maxN) * w;
+      const toY = (ops) => pad.t + h - (ops / 100) * h;
+
+      const curves = [
+        { color: '#16a34a', data: () => [...Array(101)].map((_,i) => [i, 1]), name: 'O(1)', hl: stepIdx === 1 },
+        { color: '#0284c7', data: () => [...Array(101)].map((_,i) => [i, Math.log2(Math.max(i,1)) * 3]), name: 'O(log n)', hl: stepIdx === 1 },
+        { color: '#d97706', data: () => [...Array(101)].map((_,i) => [i, i * 0.5]), name: 'O(n)', hl: stepIdx === 2 },
+        { color: '#7c3aed', data: () => [...Array(101)].map((_,i) => [i, i * Math.log2(Math.max(i,1)) * 0.2]), name: 'O(n log n)', hl: false },
+        { color: '#dc2626', data: () => [...Array(101)].map((_,i) => [i, i * i * 0.006]), name: 'O(n²)', hl: stepIdx === 2 },
+      ];
+
+      curves.forEach(curve => {
+        ctx.strokeStyle = curve.color;
+        ctx.lineWidth = curve.hl ? 3.5 : 1.5;
+        ctx.globalAlpha = curve.hl ? 1 : 0.5;
+        const pts = curve.data();
+        ctx.beginPath();
+        let first = true;
+        pts.forEach(([n, ops]) => {
+          const x = toX(n), y = toY(Math.min(ops, 100));
+          if (first) { ctx.moveTo(x, y); first = false; }
+          else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+
+        // Label
+        if (curve.hl) {
+          ctx.fillStyle = curve.color; ctx.font = '600 11px "JetBrains Mono"'; ctx.textAlign = 'left';
+          const lastPt = pts[pts.length - 1];
+          ctx.fillText(curve.name, toX(lastPt[0]) + 4, toY(Math.min(lastPt[1], 100)));
+        }
+        ctx.globalAlpha = 1;
+      });
+
+      // All labels when no specific highlight (overview)
+      if (stepIdx === 0 || stepIdx === 3) {
+        curves.forEach((c, i) => {
+          const end = c.data()[80];
+          ctx.fillStyle = c.color; ctx.font = '600 10px "JetBrains Mono"'; ctx.textAlign = 'left';
+          ctx.fillText(c.name, toX(end[0]) + 3, toY(Math.min(end[1], 100)) + 4 * i - 8);
+        });
+      }
+
+      document.getElementById('viz-hint').textContent = CHAPTERS[0].steps[stepIdx].desc;
+    },
+  },
+  // --- 线性结构 (blue) ---
+  {
+    id: 'array', section: 'linear', color: 'var(--blue)', colorClass: 'blue',
+    emoji: '📐', title: '数组', desc: '内存模型 · 随机访问 · 动态扩容',
+    difficulty: '入门', diffClass: 'badge-easy', index: 1,
+    concept: `<h3>什么是数组？</h3>
+      <p>数组是内存中<span class="highlight">连续存储</span>的一组相同类型元素。想象一排编号的储物柜，每个柜子紧挨着下一个，你可以通过编号（索引）<span class="highlight">瞬间找到</span>任意一个柜子里的东西。</p>
+      <p style="margin-top:8px">数组的「灵魂」在于 <span class="highlight">O(1) 随机访问</span>——给定索引 i，地址 = 首地址 + i × 元素大小，一次计算直达目标。但插入和删除需要搬移元素，平均 O(n)。</p>
+      <p style="margin-top:8px">动态数组（如 JS 的 Array）在空间不够时会<span class="highlight">自动扩容</span>：申请一块更大的连续内存，把旧数据拷贝过去。虽然单次扩容是 O(n)，但均摊分析下来，每次插入还是 O(1)。</p>
+      <div class="complexity-table">
+        <span class="tc good">访问 O(1)</span> <span class="tc ok">搜索 O(n)</span>
+        <span class="tc slow">插入 O(n)</span> <span class="tc slow">删除 O(n)</span>
+        <span class="tc ok">空间 O(n)</span>
+      </div>`,
+    steps: [
+      { desc: '数组 [3, 7, 2, 9, 5] 在内存中连续存放，索引从 0 开始' },
+      { desc: '访问 arr[2]：首地址 + 2 × 元素大小 = 直接定位到元素 2', highlightIdx: 2 },
+      { desc: '在索引 1 插入 6：需要把 7,2,9,5 整体后移一位', highlightIdx: 1, inserting: true },
+      { desc: '插入完成：数组变为 [3, 6, 7, 2, 9, 5]，长度+1' },
+    ],
+    getPseudo: () => `访问:  arr[i] → 直接定位, O(1)
+插入:  for j ← n-1 downto i
+        arr[j+1] ← arr[j]
+      arr[i] ← val
+      n ← n + 1`,
+    getCode: () => `// O(1) 随机访问
+let x = arr[2];
+
+// O(n) 插入 — 元素后移
+function insert(arr, i, val) {
+  for (let j = arr.length; j > i; j--) {
+    arr[j] = arr[j - 1];
+  }
+  arr[i] = val;
+  return arr;
+}`,
+    renderViz(stepIdx) {
+      const container = document.getElementById('viz-container');
+      container.innerHTML = '';
+      container.classList.add('viz-dom');
+      let arr = stepIdx <= 2 ? [3,7,2,9,5] : [3,6,7,2,9,5];
+      if (stepIdx === 2) arr = [3,7,2,9,5];
+      arr.forEach((v, i) => {
+        const cell = document.createElement('div'); cell.className = 'viz-cell';
+        cell.innerHTML = `<span>${v}</span><span class="idx">${i}</span>`;
+        if (stepIdx === 1 && i === 2) cell.classList.add('highlight');
+        if (stepIdx === 2 && i >= 1) cell.classList.add(i === 1 ? 'highlight' : 'comparing');
+        if (stepIdx === 3 && i === 1) cell.classList.add('highlight');
+        container.appendChild(cell);
+      });
+      document.getElementById('viz-hint').textContent = CHAPTERS[0].steps[stepIdx].desc;
+    },
+  },
+  {
+    id: 'linked-list', section: 'linear', color: 'var(--blue)', colorClass: 'blue',
+    emoji: '🔗', title: '链表', desc: '指针操作 · 单向双向 · 与数组对比',
+    difficulty: '入门', diffClass: 'badge-easy', index: 2,
+    concept: `<h3>什么是链表？</h3>
+      <p>链表由一系列<span class="highlight">节点（Node）</span>组成，每个节点包含<span class="highlight">数据</span>和指向下一个节点的<span class="highlight">指针</span>。与数组不同，链表的元素在内存中<span class="highlight">不必连续</span>，它们通过指针串联在一起，就像一列手拉手的人。</p>
+      <p style="margin-top:8px">链表的核心优势是<span class="highlight">O(1) 插入和删除</span>——只需修改指针指向，不需要搬移元素。但访问第 k 个元素必须从头开始一个个数过去，O(n)。</p>
+      <p style="margin-top:8px">单向链表每个节点只有一个 <code>next</code> 指针；双向链表多了 <code>prev</code> 指针，可以双向遍历，删除时不需要找前驱。</p>
+      <div class="complexity-table">
+        <span class="tc slow">访问 O(n)</span> <span class="tc slow">搜索 O(n)</span>
+        <span class="tc good">插入 O(1)</span> <span class="tc good">删除 O(1)</span>
+        <span class="tc ok">空间 O(n)</span>
+      </div>`,
+    steps: [
+      { desc: '链表 head → [5|•] → [3|•] → [7|×]，三个节点串联' },
+      { desc: '在节点 3 之后插入 9：创建新节点 [9|•]' },
+      { desc: '修改指针：新节点.next ← 节点3.next；节点3.next ← 新节点' },
+      { desc: '插入完成：head → [5] → [3] → [9] → [7] → null' },
+    ],
+    getPseudo: () => `插入:  newNode ← Node(val)
+      newNode.next ← node.next
+      node.next ← newNode`,
+    getCode: () => `class Node {
+  constructor(val) {
+    this.val = val;
+    this.next = null;
+  }
+}
+
+function insertAfter(node, val) {
+  let newNode = new Node(val);
+  newNode.next = node.next;
+  node.next = newNode;
+}`,
+    renderViz(stepIdx) {
+      const c = document.getElementById('viz-container');
+      c.innerHTML = ''; c.classList.add('viz-dom');
+      let vals, highlightIdx, insertIdx, highlight2;
+      if (stepIdx === 0) { vals = [5,3,7]; highlightIdx = -1; insertIdx = -1; }
+      else if (stepIdx === 1) { vals = [5,3,7]; highlightIdx = 1; insertIdx = 1; }
+      else if (stepIdx === 2) { vals = [5,3,7]; highlightIdx = 1; insertIdx = 1; highlight2 = 2; }
+      else { vals = [5,3,9,7]; highlightIdx = 2; insertIdx = -1; }
+      if (stepIdx === 1) {
+        const n = document.createElement('span'); n.className = 'viz-node inserting'; n.textContent = '9';
+        c.appendChild(n);
+        c.appendChild(document.createElement('span')).innerHTML = '<span style="color:var(--text-muted);margin:0 6px;font-size:12px">new</span>';
+      }
+      vals.forEach((v, i) => {
+        const node = document.createElement('div'); node.className = 'viz-node';
+        if (i === highlightIdx) node.classList.add('highlight');
+        if ((stepIdx === 2 || stepIdx === 1) && i === highlight2) node.classList.add('comparing');
+        node.innerHTML = `${v}<span style="color:var(--text-muted);margin-left:6px;font-size:10px">|•</span>`;
+        c.appendChild(node);
+        if (i < vals.length - 1) {
+          const arrow = document.createElement('span'); arrow.className = 'viz-arrow'; arrow.textContent = '→';
+          c.appendChild(arrow);
+        }
+      });
+      const nil = document.createElement('span'); nil.className = 'viz-arrow'; nil.textContent = '→ null';
+      c.appendChild(nil);
+      document.getElementById('viz-hint').textContent = CHAPTERS[1].steps[stepIdx].desc;
+    },
+  },
+  {
+    id: 'stack', section: 'linear', color: 'var(--blue)', colorClass: 'blue',
+    emoji: '📚', title: '栈', desc: 'LIFO · 括号匹配 · 函数调用',
+    difficulty: '入门', diffClass: 'badge-easy', index: 3,
+    concept: `<h3>什么是栈？</h3>
+      <p>栈是一种<span class="highlight">后进先出（LIFO）</span>的线性结构。就像一叠盘子——你只能从最上面取，也只能放在最上面。栈的两个核心操作：<span class="highlight">push（压入）</span>和<span class="highlight">pop（弹出）</span>。</p>
+      <p style="margin-top:8px">栈在计算机中无处不在：<span class="highlight">函数调用栈</span>记录嵌套调用关系；编辑器的<span class="highlight">撤销操作</span>就是弹出最近一步；<span class="highlight">括号匹配</span>检查表达式是否合法——遇到左括号压栈，右括号弹出匹配。</p>
+      <div class="complexity-table">
+        <span class="tc good">push O(1)</span> <span class="tc good">pop O(1)</span>
+        <span class="tc good">peek O(1)</span> <span class="tc slow">搜索 O(n)</span>
+        <span class="tc ok">空间 O(n)</span>
+      </div>`,
+    steps: [
+      { desc: '空栈 []，准备压入 5 → push(5)' },
+      { desc: '继续 push(3) 和 push(7)：栈变为 [5, 3, 7]，7 在栈顶' },
+      { desc: 'pop() 弹出栈顶元素 7，栈变为 [5, 3]' },
+      { desc: '再 push(9)：栈变为 [5, 3, 9]' },
+    ],
+    getPseudo: () => `push(val):
+  stack[top] ← val
+  top ← top + 1
+
+pop():
+  val ← stack[top-1]
+  top ← top - 1
+  return val`,
+    getCode: () => `class Stack {
+  constructor() { this.items = []; }
+
+  push(val) { this.items.push(val); }
+  pop() { return this.items.pop(); }
+  peek() {
+    return this.items[this.items.length - 1];
+  }
+  isEmpty() { return this.items.length === 0; }
+}`,
+    renderViz(stepIdx) {
+      const c = document.getElementById('viz-container'); c.innerHTML = '';
+      let items;
+      if (stepIdx === 0) items = [];
+      else if (stepIdx <= 2) items = [5, 3, 7];
+      else items = [5, 3, 9];
+      if (stepIdx === 2) items = [5, 3];
+      if (items.length === 0 && stepIdx > 0) items = [5];
+      const stack = document.createElement('div'); stack.className = 'viz-stack';
+      items.forEach((v, i) => {
+        const el = document.createElement('div'); el.className = 'viz-stack-item'; el.textContent = v;
+        if (i === items.length - 1) {
+          if (stepIdx === 1 || stepIdx === 3) el.classList.add('incoming');
+          else el.classList.add('top');
+        }
+        stack.appendChild(el);
+      });
+      c.appendChild(stack);
+      document.getElementById('viz-hint').textContent = CHAPTERS[2].steps[stepIdx].desc;
+    },
+  },
+  {
+    id: 'queue', section: 'linear', color: 'var(--blue)', colorClass: 'blue',
+    emoji: '🔄', title: '队列', desc: 'FIFO · 循环队列 · 任务调度',
+    difficulty: '入门', diffClass: 'badge-easy', index: 4,
+    concept: `<h3>什么是队列？</h3>
+      <p>队列是一种<span class="highlight">先进先出（FIFO）</span>的线性结构。就像排队买票——先来的人先被服务。核心操作：<span class="highlight">enqueue（入队）</span>在队尾添加，<span class="highlight">dequeue（出队）</span>从队头移除。</p>
+      <p style="margin-top:8px">队列广泛应用于<span class="highlight">任务调度</span>（消息队列）、<span class="highlight">BFS 搜索</span>、<span class="highlight">打印缓冲</span>等场景。循环队列用固定大小的数组实现，通过取模运算让队尾"绕回"队头，避免空间浪费。</p>
+      <div class="complexity-table">
+        <span class="tc good">入队 O(1)</span> <span class="tc good">出队 O(1)</span>
+        <span class="tc good">peek O(1)</span> <span class="tc slow">搜索 O(n)</span>
+        <span class="tc ok">空间 O(n)</span>
+      </div>`,
+    steps: [
+      { desc: '空队列 []，enqueue(5)：5 进入队尾，队头 = 队尾 = 5' },
+      { desc: 'enqueue(3), enqueue(7)：队列 [5 ← 3 ← 7]，5 在队头' },
+      { desc: 'dequeue()：移除队头 5，队列变为 [3 ← 7]' },
+      { desc: 'enqueue(9)：队列 [3 ← 7 ← 9]，依然保持 FIFO 顺序' },
+    ],
+    getPseudo: () => `enqueue(val):
+  queue[rear] ← val
+  rear ← (rear + 1) mod CAP
+
+dequeue():
+  val ← queue[front]
+  front ← (front + 1) mod CAP
+  return val`,
+    getCode: () => `class Queue {
+  constructor() { this.items = []; }
+
+  enqueue(val) { this.items.push(val); }
+  dequeue() { return this.items.shift(); }
+  peek() { return this.items[0]; }
+  isEmpty() { return this.items.length === 0; }
+}
+
+// 循环队列: head/tail 取模绕回`,
+    renderViz(stepIdx) {
+      const c = document.getElementById('viz-container'); c.innerHTML = '';
+      let items;
+      if (stepIdx === 0) items = [5];
+      else if (stepIdx === 1) items = [5,3,7];
+      else if (stepIdx === 2) items = [3,7];
+      else items = [3,7,9];
+      const wrap = document.createElement('div'); wrap.style.display = 'flex'; wrap.style.alignItems = 'center'; wrap.style.gap = '4px';
+      wrap.innerHTML = '<span style="color:var(--text-muted);font-size:12px">队头→</span>';
+      items.forEach((v, i) => {
+        const el = document.createElement('div'); el.className = 'viz-node';
+        if (i === 0 && stepIdx >= 1) el.classList.add('top');
+        if (i === items.length - 1 && (stepIdx === 3)) el.classList.add('incoming');
+        el.textContent = v;
+        wrap.appendChild(el);
+      });
+      wrap.innerHTML += '<span style="color:var(--text-muted);font-size:12px">←队尾</span>';
+      c.appendChild(wrap);
+      document.getElementById('viz-hint').textContent = CHAPTERS[3].steps[stepIdx].desc;
+    },
+  },
+  // --- 树形结构 (purple) ---
+  {
+    id: 'binary-tree', section: 'tree', color: 'var(--purple)', colorClass: 'purple',
+    emoji: '🌳', title: '二叉树', desc: '遍历 · 递归与迭代 · 树的性质',
+    difficulty: '基础', diffClass: 'badge-mid', index: 5,
+    concept: `<h3>什么是二叉树？</h3>
+      <p>二叉树每个节点最多有两个子节点：<span class="highlight">左子节点</span>和<span class="highlight">右子节点</span>。它是最基础的树形结构，也是 BST、AVL、堆的基石。</p>
+      <p style="margin-top:8px">三种经典遍历方式：<span class="highlight">前序</span>（根→左→右）、<span class="highlight">中序</span>（左→根→右）、<span class="highlight">后序</span>（左→右→根）。每种都有<span class="highlight">递归</span>和<span class="highlight">迭代（栈模拟）</span>两种写法。层序遍历用队列，一层一层地访问。</p>
+      <div class="complexity-table">
+        <span class="tc ok">遍历 O(n)</span> <span class="tc ok">搜索 O(n)</span>
+        <span class="tc ok">插入 O(1)</span> <span class="tc ok">删除 O(1)</span>
+        <span class="tc ok">空间 O(n)</span>
+      </div>`,
+    steps: [
+      { desc: '二叉树：根节点 1，左子 2，右子 3；2 的左子 4，右子 5' },
+      { desc: '前序遍历：1 → 2 → 4 → 5 → 3（根→左→右）' },
+      { desc: '中序遍历：4 → 2 → 5 → 1 → 3（左→根→右）' },
+      { desc: '后序遍历：4 → 5 → 2 → 3 → 1（左→右→根）' },
+    ],
+    getPseudo: () => `前序(root):
+  if root = null: return
+  visit(root)
+  前序(root.left)
+  前序(root.right)
+
+中序(root):
+  if root = null: return
+  中序(root.left)
+  visit(root)
+  中序(root.right)`,
+    getCode: () => `class TreeNode {
+  constructor(val) {
+    this.val = val;
+    this.left = this.right = null;
+  }
+}
+
+// 递归中序遍历
+function inorder(root) {
+  if (!root) return;
+  inorder(root.left);
+  console.log(root.val);  // visit
+  inorder(root.right);
+}`,
+    renderViz(stepIdx) {
+      drawTreeCanvas(stepIdx, 'general');
+    },
+  },
+  {
+    id: 'bst', section: 'tree', color: 'var(--purple)', colorClass: 'purple',
+    emoji: '🎯', title: '二叉搜索树', desc: '查找 · 插入 · 删除 · BST 性质',
+    difficulty: '基础', diffClass: 'badge-mid', index: 6,
+    concept: `<h3>什么是二叉搜索树（BST）？</h3>
+      <p>BST 在二叉树的基础上加了一条规则：<span class="highlight">左子树所有节点 < 根 < 右子树所有节点</span>。这条规则让查找可以「二分」——比根小走左边，比根大走右边，平均查找时间 O(log n)。</p>
+      <p style="margin-top:8px">插入操作从根出发，沿着比较路径走到空位后插入。删除分三种情况：<span class="highlight">叶子节点</span>直接删；<span class="highlight">只有一个子节点</span>则子承父位；<span class="highlight">有两个子节点</span>则用后继（右子树最小值）替换。BST 最坏情况下退化成链表 O(n)，由此引出平衡树。</p>
+      <div class="complexity-table">
+        <span class="tc good">平均 O(log n)</span> <span class="tc slow">最坏 O(n)</span>
+        <span class="tc ok">空间 O(n)</span>
+      </div>`,
+    steps: [
+      { desc: 'BST：[5,3,7,2,4,6,8] — 左小右大，查找 4 只需比较 3 次' },
+      { desc: '插入 9：5→7→8→空位(8的右子)，插入完成' },
+      { desc: '删除叶子节点 2：直接移除，不影响其他节点' },
+      { desc: '删除有两个子节点的 5：找后继 6，替换 5，删除原 6' },
+    ],
+    getPseudo: () => `search(root, key):
+  if root=null or root.val=key: return root
+  if key < root.val: return search(root.left, key)
+  return search(root.right, key)
+
+insert(root, key):
+  if root=null: return Node(key)
+  if key<root.val: root.left=insert(root.left,key)
+  else: root.right=insert(root.right,key)
+  return root`,
+    getCode: () => `function search(root, key) {
+  if (!root || root.val === key) return root;
+  return key < root.val
+    ? search(root.left, key)
+    : search(root.right, key);
+}
+
+function insert(root, key) {
+  if (!root) return new TreeNode(key);
+  if (key < root.val)
+    root.left = insert(root.left, key);
+  else
+    root.right = insert(root.right, key);
+  return root;
+}`,
+    renderViz(stepIdx) {
+      drawTreeCanvas(stepIdx, 'bst');
+    },
+  },
+  {
+    id: 'avl', section: 'tree', color: 'var(--purple)', colorClass: 'purple',
+    emoji: '⚖️', title: 'AVL 树', desc: '旋转 · 平衡因子 · 严格自平衡',
+    difficulty: '进阶', diffClass: 'badge-hard', index: 7,
+    concept: `<h3>什么是 AVL 树？</h3>
+      <p>AVL 树是最早的<span class="highlight">自平衡二叉搜索树</span>，要求任意节点的<span class="highlight">左右子树高度差不超过 1</span>（平衡因子 ∈ {-1, 0, 1}）。一旦插入或删除破坏了平衡，立即通过<span class="highlight">旋转</span>修复。</p>
+      <p style="margin-top:8px">四种失衡情况对应四种旋转：<span class="highlight">LL（右旋）</span>、<span class="highlight">RR（左旋）</span>、<span class="highlight">LR（左旋+右旋）</span>、<span class="highlight">RL（右旋+左旋）</span>。旋转操作是 O(1)，因此 AVL 的查找/插入/删除都严格 O(log n)。代价是旋转开销较大，实际工程中红黑树更常见。</p>
+      <div class="complexity-table">
+        <span class="tc good">查找 O(log n)</span> <span class="tc good">插入 O(log n)</span>
+        <span class="tc good">删除 O(log n)</span> <span class="tc ok">空间 O(n)</span>
+      </div>`,
+    steps: [
+      { desc: '平衡的 AVL 树：[10,5,15,3,7] — 所有节点平衡因子 ≤ 1' },
+      { desc: '插入 2 后，节点 5 的平衡因子变为 2（左重），触发 LL 情况' },
+      { desc: '对节点 5 执行右旋：5 成为 3 的右子，树恢复平衡' },
+      { desc: '旋转后：[10,3,15,2,5,7] — 平衡因子全部合规' },
+    ],
+    getPseudo: () => `右旋(y):
+  x ← y.left
+  T2 ← x.right
+  x.right ← y
+  y.left ← T2
+  updateHeight(y)
+  updateHeight(x)
+  return x`,
+    getCode: () => `function rotateRight(y) {
+  let x = y.left;
+  let T2 = x.right;
+  x.right = y;
+  y.left = T2;
+  y.height = 1 + Math.max(
+    height(y.left), height(y.right));
+  x.height = 1 + Math.max(
+    height(x.left), height(x.right));
+  return x; // new root
+}`,
+    renderViz(stepIdx) {
+      drawTreeCanvas(stepIdx, 'avl');
+    },
+  },
+  {
+    id: 'rbtree', section: 'tree', color: 'var(--purple)', colorClass: 'purple',
+    emoji: '⚫', title: '红黑树', desc: '变色 · 旋转 · 近似平衡',
+    difficulty: '进阶', diffClass: 'badge-hard', index: 8,
+    concept: `<h3>什么是红黑树？</h3>
+      <p>红黑树是一种<span class="highlight">近似平衡</span>的 BST，通过<span class="highlight">颜色标记（红/黑）</span>和五条规则保证树的高度不超过 2log(n+1)。相比 AVL 的严格平衡，红黑树牺牲了部分平衡性换取<span class="highlight">更少的旋转次数</span>，插入删除效率更高。</p>
+      <p style="margin-top:8px">五条规则：1) 节点红或黑；2) 根是黑；3) 叶子(NIL)是黑；4) 红节点的子节点必须是黑（<span class="highlight">不连续红</span>）；5) 任意节点到其所有后代叶子的路径上有<span class="highlight">相同数量的黑节点</span>。</p>
+      <div class="complexity-table">
+        <span class="tc good">查找 O(log n)</span> <span class="tc good">插入 O(log n)</span>
+        <span class="tc good">删除 O(log n)</span> <span class="tc ok">空间 O(n)</span>
+      </div>`,
+    steps: [
+      { desc: '红黑树：[B8, R4, B12, B2, B6, B10, B14] — 满足五条规则' },
+      { desc: '插入 R1 在 B2 下 — 违反规则4（红-红相邻），触发修复' },
+      { desc: '变色：父 B2 和叔 B6 变黑，祖父 R4 变红（上推红色）' },
+      { desc: '最终状态：规则全部满足，根保持黑色' },
+    ],
+    getPseudo: () => `插入修复(z):
+  while parent(z) is RED:
+    if uncle is RED:     // Case 1
+      recolor parent, uncle black
+      recolor grandparent red
+      z ← grandparent
+    else:                // Case 2/3
+      rotate and recolor`,
+    getCode: () => `function insertFixup(root, z) {
+  while (z.parent && z.parent.color === RED) {
+    let uncle = getUncle(z);
+    if (uncle && uncle.color === RED) {
+      z.parent.color = BLACK;
+      uncle.color = BLACK;
+      z = z.parent.parent;
+      z.color = RED;
+    } else {
+      // rotate + recolor
+      if (isLeftChild(z.parent) !== isLeftChild(z))
+        z = z.parent, rotate(!isLeftChild(z) ? 'left' : 'right', z);
+      z.parent.color = BLACK;
+      z.parent.parent.color = RED;
+      rotate(isLeftChild(z.parent) ? 'right' : 'left', z.parent.parent);
+    }
+  }
+  root.color = BLACK;
+}`,
+    renderViz(stepIdx) {
+      drawTreeCanvas(stepIdx, 'rbtree');
+    },
+  },
+  {
+    id: 'heap', section: 'tree', color: 'var(--purple)', colorClass: 'purple',
+    emoji: '⛰️', title: '堆', desc: '最大堆/最小堆 · 堆排序 · 优先队列',
+    difficulty: '基础', diffClass: 'badge-mid', index: 9,
+    concept: `<h3>什么是堆？</h3>
+      <p>堆是一种<span class="highlight">完全二叉树</span>，满足堆序性质：<span class="highlight">最大堆</span>中每个节点的值 ≥ 其子节点；<span class="highlight">最小堆</span>中每个节点的值 ≤ 其子节点。堆通常用<span class="highlight">数组</span>存储——节点 i 的左子在 2i+1，右子在 2i+2，父节点在 ⌊(i-1)/2⌋。</p>
+      <p style="margin-top:8px">核心操作：<span class="highlight">上浮（bubble-up）</span>用于插入，新元素放到末尾后逐层上浮；<span class="highlight">下沉（bubble-down）</span>用于删除堆顶，末尾元素替换堆顶后逐层下沉。二者都 O(log n)。堆排序就是反复弹出堆顶。</p>
+      <div class="complexity-table">
+        <span class="tc good">取最值 O(1)</span> <span class="tc good">插入 O(log n)</span>
+        <span class="tc good">删除 O(log n)</span> <span class="tc ok">建堆 O(n)</span>
+        <span class="tc ok">空间 O(n)</span>
+      </div>`,
+    steps: [
+      { desc: '最大堆：[50,30,20,15,10,8,16] — 每个父节点 ≥ 子节点' },
+      { desc: '插入 60：放到末尾 [..,16,60]，然后上浮' },
+      { desc: '60 上浮：60>15(父) 交换 → 60>30(父) 交换 → 60<50(根) 停止' },
+      { desc: '堆变为 [60,50,20,30,10,8,16,15] — 堆序恢复' },
+    ],
+    getPseudo: () => `insert(heap, val):
+  i ← heap.length
+  heap.push(val)
+  while i>0 and heap[i] > heap[parent(i)]:
+    swap(heap[i], heap[parent(i)])
+    i ← parent(i)`,
+    getCode: () => `class MaxHeap {
+  constructor() { this.heap = []; }
+
+  insert(val) {
+    this.heap.push(val);
+    let i = this.heap.length - 1;
+    while (i > 0) {
+      let p = Math.floor((i - 1) / 2);
+      if (this.heap[p] >= this.heap[i]) break;
+      [this.heap[p], this.heap[i]] = [this.heap[i], this.heap[p]];
+      i = p;
+    }
+  }
+}`,
+    renderViz(stepIdx) {
+      drawTreeCanvas(stepIdx, 'heap');
+    },
+  },
+  // --- 图与散列 (pink) ---
+  {
+    id: 'hash-table', section: 'hashgraph', color: 'var(--pink)', colorClass: 'pink',
+    emoji: '🗂️', title: '哈希表', desc: '哈希函数 · 冲突 · 链地址法',
+    difficulty: '基础', diffClass: 'badge-mid', index: 10,
+    concept: `<h3>什么是哈希表？</h3>
+      <p>哈希表通过<span class="highlight">哈希函数</span>将键映射到数组索引，实现<span class="highlight">平均 O(1)</span> 的查找/插入/删除。就像字典的索引——从「苹果」的拼音首字母直接翻到 A 区。</p>
+      <p style="margin-top:8px">哈希冲突不可避免（不同键映射到同一索引），两种解决方式：<span class="highlight">链地址法</span>（每个槽位存一个链表/红黑树，Java HashMap 的做法）；<span class="highlight">开放寻址法</span>（冲突时找下一个空位，线性探测/平方探测）。负载因子 = 元素数 / 槽位数，超过阈值（如 0.75）触发扩容。</p>
+      <div class="complexity-table">
+        <span class="tc good">平均 O(1)</span> <span class="tc slow">最坏 O(n)</span>
+        <span class="tc ok">空间 O(n)</span>
+      </div>`,
+    steps: [
+      { desc: '哈希表 size=7：h("cat")=2, h("dog")=4, h("fox")=2（冲突！）' },
+      { desc: '"cat"→槽2, "dog"→槽4. "fox" 哈希也是2 — 用链地址法挂到槽2的链表上' },
+      { desc: '查找 "fox"：计算 hash=2，遍历槽2的链表找到匹配键' },
+      { desc: '扩容：负载因子超 0.75，size 翻倍到 17，所有元素重新哈希' },
+    ],
+    getPseudo: () => `put(key, val):
+  i ← hash(key) mod M
+  if table[i] empty: table[i] ← (key,val)
+  else: 链到 table[i] 的链表末尾`,
+    getCode: () => `class HashTable {
+  constructor(size = 7) {
+    this.size = size;
+    this.table = new Array(size).fill(null)
+      .map(() => []);
+  }
+  _hash(key) {
+    let h = 0;
+    for (let c of key) h = (h * 31 + c.charCodeAt(0)) % this.size;
+    return h;
+  }
+  put(key, val) {
+    let bucket = this.table[this._hash(key)];
+    for (let e of bucket)
+      if (e[0] === key) { e[1] = val; return; }
+    bucket.push([key, val]);
+  }
+}`,
+    renderViz(stepIdx) {
+      const c = document.getElementById('viz-container'); c.innerHTML = '';
+      const wrap = document.createElement('div'); wrap.className = 'viz-hash';
+      const data = stepIdx === 0 ? [{idx:0,v:''},{idx:1,v:''},{idx:2,v:'cat'},{idx:3,v:''},{idx:4,v:'dog'},{idx:5,v:''},{idx:6,v:''}]
+        : stepIdx === 1 ? [{idx:0,v:''},{idx:1,v:''},{idx:2,v:'cat→fox'},{idx:3,v:''},{idx:4,v:'dog'},{idx:5,v:''},{idx:6,v:''}]
+        : [{idx:0,v:''},{idx:1,v:''},{idx:2,v:'cat→fox'},{idx:3,v:''},{idx:4,v:'dog'},{idx:5,v:''},{idx:6,v:''}];
+      const final = stepIdx === 3 ? '扩容后大小17' : '';
+      data.forEach(b => {
+        const el = document.createElement('div'); el.className = 'viz-bucket';
+        if (stepIdx === 0 && b.idx === 2) el.classList.add('highlight');
+        if ((stepIdx === 1 || stepIdx === 2) && b.idx === 2) el.classList.add('highlight');
+        el.innerHTML = `<div class="bucket-idx">${b.idx}</div><div class="bucket-val">${b.v || '∅'}</div>`;
+        wrap.appendChild(el);
+      });
+      c.appendChild(wrap);
+      document.getElementById('viz-hint').textContent = CHAPTERS[9].steps[stepIdx].desc + (final ? ' ' + final : '');
+    },
+  },
+  {
+    id: 'graph', section: 'hashgraph', color: 'var(--pink)', colorClass: 'pink',
+    emoji: '🕸️', title: '图', desc: '邻接表 · BFS/DFS · 拓扑排序',
+    difficulty: '进阶', diffClass: 'badge-hard', index: 11,
+    concept: `<h3>什么是图？</h3>
+      <p>图由<span class="highlight">顶点（Vertex）</span>和<span class="highlight">边（Edge）</span>组成，是表达能力最强的数据结构——社交关系、地图导航、网络拓扑都是图。图分为<span class="highlight">有向/无向</span>、<span class="highlight">带权/无权</span>、<span class="highlight">有环/无环</span>。</p>
+      <p style="margin-top:8px">两种存储方式：<span class="highlight">邻接矩阵</span>（O(V²) 空间，O(1) 查边，适合稠密图）；<span class="highlight">邻接表</span>（O(V+E) 空间，适合稀疏图，更常用）。深度优先 DFS用栈/递归，广度优先 BFS用队列，二者都是 O(V+E)。</p>
+      <div class="complexity-table">
+        <span class="tc ok">BFS O(V+E)</span> <span class="tc ok">DFS O(V+E)</span>
+        <span class="tc ok">空间 O(V+E)</span>
+      </div>`,
+    steps: [
+      { desc: '图：A-B, A-C, B-D, C-D, C-E. 从 A 出发做 BFS' },
+      { desc: 'BFS 第1层：访问 A，队列=[B,C]（A 的邻居入队）' },
+      { desc: 'BFS 第2层：弹出 B，D 入队；弹出 C，E 入队。队列=[D,E]' },
+      { desc: 'BFS 第3层：弹出 D,E — 遍历完成。顺序：A→B→C→D→E' },
+    ],
+    getPseudo: () => `BFS(start):
+  queue ← [start]
+  visited[start] ← true
+  while queue not empty:
+    v ← queue.dequeue()
+    visit(v)
+    for each neighbor w of v:
+      if not visited[w]:
+        visited[w] ← true
+        queue.enqueue(w)
+
+DFS(v):
+  visited[v] ← true
+  visit(v)
+  for each neighbor w of v:
+    if not visited[w]:
+      DFS(w)`,
+    getCode: () => `function bfs(graph, start) {
+  let visited = new Set();
+  let queue = [start];
+  visited.add(start);
+  while (queue.length) {
+    let v = queue.shift();
+    console.log(v); // visit
+    for (let w of graph[v]) {
+      if (!visited.has(w)) {
+        visited.add(w);
+        queue.push(w);
+      }
+    }
+  }
+}
+
+// DFS (recursive)
+function dfs(graph, v, visited = new Set()) {
+  visited.add(v);
+  console.log(v);
+  for (let w of graph[v])
+    if (!visited.has(w)) dfs(graph, w, visited);
+}`,
+    renderViz(stepIdx) {
+      drawGraphCanvas(stepIdx);
+    },
+  },
+  // --- 算法 (green) ---
+  {
+    id: 'sorting', section: 'algo', color: 'var(--green)', colorClass: 'green',
+    emoji: '📊', title: '排序', desc: '冒泡→选择→插入→快排→归并',
+    difficulty: '基础', diffClass: 'badge-mid', index: 12,
+    concept: `<h3>排序算法全景</h3>
+      <p>排序是将数据按特定顺序排列，是计算机科学中研究最深入的问题之一。从 O(n²) 的简单算法到 O(n log n) 的分治算法，每一个改进都体现了算法设计思想。</p>
+      <p style="margin-top:8px"><span class="highlight">冒泡排序</span>：相邻两两比较，大的往后冒，O(n²)。<span class="highlight">选择排序</span>：每轮找最小放到前面，O(n²)但交换次数少。<span class="highlight">插入排序</span>：像整理手牌，对近乎有序的数据接近 O(n)。<span class="highlight">快速排序</span>：选 pivot 分区，递归排序，平均 O(n log n)，实际最快。<span class="highlight">归并排序</span>：二分递归+合并，稳定 O(n log n)，适合外部排序。</p>
+      <div class="complexity-table">
+        <span class="tc slow">冒泡 O(n²)</span> <span class="tc slow">选择 O(n²)</span>
+        <span class="tc good">快排 O(n log n)</span> <span class="tc good">归并 O(n log n)</span>
+      </div>`,
+    steps: [
+      { desc: '初始数组 [29, 10, 14, 37, 13] — 准备用快速排序' },
+      { desc: '选 pivot=14（最后一个），分区：小的放左 [10,13]，大的放右 [29,37]，14居中' },
+      { desc: '递归排左 [10,13]（已有序）和右 [29,37]（已有序）' },
+      { desc: '合并： [10, 13, 14, 29, 37] — 排序完成！' },
+    ],
+    getPseudo: () => `快排(arr, lo, hi):
+  if lo >= hi: return
+  pivot ← partition(arr, lo, hi)
+  快排(arr, lo, pivot-1)
+  快排(arr, pivot+1, hi)
+
+partition(arr, lo, hi):
+  pivot ← arr[hi]
+  i ← lo - 1
+  for j ← lo to hi-1:
+    if arr[j] < pivot:
+      i++; swap(arr[i], arr[j])
+  swap(arr[i+1], arr[hi])
+  return i+1`,
+    getCode: () => `function quickSort(arr, lo = 0, hi = arr.length - 1) {
+  if (lo >= hi) return;
+  let pivot = partition(arr, lo, hi);
+  quickSort(arr, lo, pivot - 1);
+  quickSort(arr, pivot + 1, hi);
+}
+
+function partition(arr, lo, hi) {
+  let pivot = arr[hi], i = lo - 1;
+  for (let j = lo; j < hi; j++) {
+    if (arr[j] < pivot) {
+      i++; [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+  }
+  [arr[i + 1], arr[hi]] = [arr[hi], arr[i + 1]];
+  return i + 1;
+}`,
+    renderViz(stepIdx) {
+      const c = document.getElementById('viz-container'); c.innerHTML = ''; c.classList.add('viz-dom');
+      let arr;
+      if (stepIdx === 0) arr = [29,10,14,37,13];
+      else if (stepIdx === 1) arr = [10,13,14,29,37];
+      else if (stepIdx === 2) arr = [10,13,14,29,37];
+      else arr = [10,13,14,29,37];
+      arr.forEach((v, i) => {
+        const cell = document.createElement('div'); cell.className = 'viz-cell';
+        cell.innerHTML = `<span>${v}</span><span class="idx">${i}</span>`;
+        if (stepIdx === 1 && i === 2) cell.classList.add('highlight');
+        if (stepIdx === 3 && arr[i] <= 14 && i <= 2) cell.classList.add('highlight');
+        if (stepIdx === 3 && i >= 3) cell.classList.add('comparing');
+        c.appendChild(cell);
+      });
+      document.getElementById('viz-hint').textContent = CHAPTERS[11].steps[stepIdx].desc;
+    },
+  },
+  {
+    id: 'searching', section: 'algo', color: 'var(--green)', colorClass: 'green',
+    emoji: '🔍', title: '搜索', desc: '线性→二分→BFS→DFS',
+    difficulty: '基础', diffClass: 'badge-mid', index: 13,
+    concept: `<h3>搜索算法全景</h3>
+      <p>搜索就是在一组数据中找到目标。数据是否有序，决定了你能用多快的算法。</p>
+      <p style="margin-top:8px"><span class="highlight">线性搜索</span>：从头到尾一个个找，O(n)，无序数据唯一的选择。<span class="highlight">二分搜索</span>：在有序数组中每次折半，O(log n)，核心是维护 lo/hi 区间不变式。<span class="highlight">BFS</span>：用队列逐层探索，找最短路径。<span class="highlight">DFS</span>：用栈/递归深入探索，找所有路径、检测环。</p>
+      <div class="complexity-table">
+        <span class="tc slow">线性 O(n)</span> <span class="tc good">二分 O(log n)</span>
+        <span class="tc ok">BFS/DFS O(V+E)</span>
+      </div>`,
+    steps: [
+      { desc: '在有序数组 [2,5,8,12,16,23,38] 中二分搜索 16' },
+      { desc: 'lo=0, hi=6, mid=3→arr[3]=12 < 16，lo=mid+1=4' },
+      { desc: 'lo=4, hi=6, mid=5→arr[5]=23 > 16，hi=mid-1=4' },
+      { desc: 'lo=4, hi=4, mid=4→arr[4]=16 == 16，找到！索引 4' },
+    ],
+    getPseudo: () => `二分搜索(arr, target):
+  lo ← 0, hi ← arr.length-1
+  while lo ≤ hi:
+    mid ← ⌊(lo+hi)/2⌋
+    if arr[mid] = target: return mid
+    if arr[mid] < target: lo ← mid+1
+    else: hi ← mid-1
+  return -1`,
+    getCode: () => `function binarySearch(arr, target) {
+  let lo = 0, hi = arr.length - 1;
+  while (lo <= hi) {
+    let mid = Math.floor((lo + hi) / 2);
+    if (arr[mid] === target) return mid;
+    if (arr[mid] < target)
+      lo = mid + 1;
+    else
+      hi = mid - 1;
+  }
+  return -1; // not found
+}`,
+    renderViz(stepIdx) {
+      const c = document.getElementById('viz-container'); c.innerHTML = ''; c.classList.add('viz-dom');
+      const arr = [2,5,8,12,16,23,38];
+      const ranges = [[0,6],[4,6],[4,4],[4,4]];
+      arr.forEach((v, i) => {
+        const cell = document.createElement('div'); cell.className = 'viz-cell';
+        cell.innerHTML = `<span>${v}</span><span class="idx">${i}</span>`;
+        if (i >= ranges[stepIdx][0] && i <= ranges[stepIdx][1]) cell.classList.add('comparing');
+        if (stepIdx === 3 && i === 4) cell.classList.add('highlight');
+        c.appendChild(cell);
+      });
+      document.getElementById('viz-hint').textContent = CHAPTERS[12].steps[stepIdx].desc;
+    },
+  },
+];
+
+// ==========================================================================
+//  CANVAS TREE RENDERER
+// ==========================================================================
+function drawTreeCanvas(stepIdx, type) {
+  const c = document.getElementById('viz-container'); c.innerHTML = '';
+  const canvas = document.createElement('canvas');
+  canvas.width = 600; canvas.height = 260;
+  canvas.style.maxWidth = '100%';
+  c.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+
+  const treeDefs = {
+    general: {
+      0: { nodes: [{x:300,y:20,v:'1',c:'#0284c7'},{x:150,y:90,v:'2',c:'#0284c7'},{x:450,y:90,v:'3',c:'#0284c7'},{x:80,y:160,v:'4',c:'#0284c7'},{x:220,y:160,v:'5',c:'#0284c7'}],
+           edges: [[0,1],[0,2],[1,3],[1,4]], labels: [], highlight: [] },
+      1: { nodes: [{x:300,y:20,v:'1',c:'#16a34a'},{x:150,y:90,v:'2',c:'#16a34a'},{x:450,y:90,v:'3',c:'#16a34a'},{x:80,y:160,v:'4',c:'#16a34a'},{x:220,y:160,v:'5',c:'#16a34a'}],
+           edges: [[0,1],[0,2],[1,3],[1,4]], labels: ['①→','②→','③→','④→','⑤→'], highlight: [0,1,3,4,2] },
+      2: { nodes: [{x:300,y:20,v:'1',c:'#d97706'},{x:150,y:90,v:'2',c:'#d97706'},{x:450,y:90,v:'3',c:'#d97706'},{x:80,y:160,v:'4',c:'#16a34a'},{x:220,y:160,v:'5',c:'#16a34a'}],
+           edges: [[0,1],[0,2],[1,3],[1,4]], labels: ['⑤→','②→','④→','①→','③→'], highlight: [3,1,4,0,2] },
+      3: { nodes: [{x:300,y:20,v:'1',c:'#d97706'},{x:150,y:90,v:'2',c:'#d97706'},{x:450,y:90,v:'3',c:'#d97706'},{x:80,y:160,v:'4',c:'#16a34a'},{x:220,y:160,v:'5',c:'#16a34a'}],
+           edges: [[0,1],[0,2],[1,3],[1,4]], labels: ['⑤→','④→','②→','①→','③→'], highlight: [3,4,1,2,0] },
+    },
+    bst: {
+      0: { nodes: [{x:300,y:20,v:'5',c:'#0284c7'},{x:120,y:90,v:'3',c:'#0284c7'},{x:480,y:90,v:'7',c:'#0284c7'},{x:40,y:160,v:'2',c:'#0284c7'},{x:200,y:160,v:'4',c:'#0284c7'},{x:400,y:160,v:'6',c:'#0284c7'},{x:540,y:160,v:'8',c:'#0284c7'}],
+           edges: [[0,1],[0,2],[1,3],[1,4],[2,5],[2,6]], highlight: [] },
+      1: { nodes: [{x:300,y:20,v:'5',c:'#0284c7'},{x:120,y:90,v:'3',c:'#0284c7'},{x:480,y:90,v:'7',c:'#0284c7'},{x:40,y:160,v:'2',c:'#0284c7'},{x:200,y:160,v:'4',c:'#0284c7'},{x:400,y:160,v:'6',c:'#0284c7'},{x:540,y:160,v:'8',c:'#0284c7'},{x:570,y:210,v:'9',c:'#16a34a'}],
+           edges: [[0,1],[0,2],[1,3],[1,4],[2,5],[2,6],[6,7]], highlight: [6] },
+      2: { nodes: [{x:300,y:20,v:'5',c:'#0284c7'},{x:120,y:90,v:'3',c:'#0284c7'},{x:480,y:90,v:'7',c:'#0284c7'},{x:200,y:160,v:'4',c:'#0284c7'},{x:400,y:160,v:'6',c:'#0284c7'},{x:540,y:160,v:'8',c:'#0284c7'}],
+           edges: [[0,1],[0,2],[1,3],[2,4],[2,5]], highlight: [1] },
+      3: { nodes: [{x:300,y:20,v:'6',c:'#16a34a'},{x:120,y:90,v:'3',c:'#0284c7'},{x:480,y:90,v:'7',c:'#0284c7'},{x:200,y:160,v:'4',c:'#0284c7'},{x:540,y:160,v:'8',c:'#0284c7'}],
+           edges: [[0,1],[0,2],[1,3],[2,4]], highlight: [0] },
+    },
+    avl: {
+      0: { nodes: [{x:300,y:20,v:'10',c:'#7c3aed'},{x:150,y:100,v:'5',c:'#7c3aed'},{x:460,y:100,v:'15',c:'#7c3aed'},{x:70,y:180,v:'3',c:'#7c3aed'},{x:230,y:180,v:'7',c:'#7c3aed'}],
+           edges: [[0,1],[0,2],[1,3],[1,4]], highlight: [] },
+      1: { nodes: [{x:300,y:20,v:'10',c:'#7c3aed'},{x:150,y:100,v:'5',c:'#dc2626'},{x:460,y:100,v:'15',c:'#7c3aed'},{x:70,y:180,v:'3',c:'#dc2626'},{x:230,y:180,v:'7',c:'#7c3aed'},{x:20,y:230,v:'2',c:'#16a34a'}],
+           edges: [[0,1],[0,2],[1,3],[1,4],[3,5]], highlight: [1,3] },
+      2: { nodes: [{x:300,y:20,v:'10',c:'#7c3aed'},{x:150,y:100,v:'3',c:'#7c3aed'},{x:460,y:100,v:'15',c:'#7c3aed'},{x:70,y:180,v:'2',c:'#7c3aed'},{x:230,y:180,v:'5',c:'#7c3aed'},{x:290,y:180,v:'7',c:'#7c3aed'}],
+           edges: [[0,1],[0,2],[1,3],[1,4],[4,5]], highlight: [1,4,0] },
+      3: { nodes: [{x:300,y:20,v:'10',c:'#7c3aed'},{x:150,y:100,v:'3',c:'#7c3aed'},{x:460,y:100,v:'15',c:'#7c3aed'},{x:70,y:180,v:'2',c:'#7c3aed'},{x:230,y:180,v:'5',c:'#7c3aed'},{x:290,y:180,v:'7',c:'#7c3aed'}],
+           edges: [[0,1],[0,2],[1,3],[1,4],[4,5]], highlight: [] },
+    },
+    rbtree: {
+      0: { nodes: [{x:300,y:20,v:'8',c:'#000',fill:'#000'},{x:120,y:100,v:'4',c:'#dc2626',fill:'#dc2626'},{x:480,y:100,v:'12',c:'#000',fill:'#000'},{x:40,y:180,v:'2',c:'#000',fill:'#000'},{x:200,y:180,v:'6',c:'#000',fill:'#000'},{x:400,y:180,v:'10',c:'#000',fill:'#000'},{x:540,y:180,v:'14',c:'#000',fill:'#000'}],
+           edges: [[0,1],[0,2],[1,3],[1,4],[2,5],[2,6]], highlight: [] },
+      1: { nodes: [{x:300,y:20,v:'8',c:'#000',fill:'#000'},{x:120,y:100,v:'4',c:'#dc2626',fill:'#dc2626'},{x:480,y:100,v:'12',c:'#000',fill:'#000'},{x:40,y:180,v:'2',c:'#000',fill:'#000'},{x:200,y:180,v:'6',c:'#000',fill:'#000'},{x:400,y:180,v:'10',c:'#000',fill:'#000'},{x:540,y:180,v:'14',c:'#000',fill:'#000'},{x:10,y:240,v:'1',c:'#dc2626',fill:'#dc2626'}],
+           edges: [[0,1],[0,2],[1,3],[1,4],[2,5],[2,6],[3,7]], highlight: [7,3,1] },
+      2: { nodes: [{x:300,y:20,v:'8',c:'#000',fill:'#000'},{x:120,y:100,v:'4',c:'#dc2626',fill:'#dc2626'},{x:480,y:100,v:'12',c:'#000',fill:'#000'},{x:40,y:180,v:'2',c:'#000',fill:'#000'},{x:200,y:180,v:'6',c:'#000',fill:'#000'},{x:400,y:180,v:'10',c:'#000',fill:'#000'},{x:540,y:180,v:'14',c:'#000',fill:'#000'},{x:10,y:240,v:'1',c:'#dc2626',fill:'#dc2626'}],
+           edges: [[0,1],[0,2],[1,3],[1,4],[2,5],[2,6],[3,7]], highlight: [3,4,1] },
+      3: { nodes: [{x:300,y:20,v:'8',c:'#000',fill:'#000'},{x:120,y:100,v:'4',c:'#000',fill:'#000'},{x:480,y:100,v:'12',c:'#000',fill:'#000'},{x:40,y:180,v:'2',c:'#000',fill:'#000'},{x:200,y:180,v:'6',c:'#000',fill:'#000'},{x:400,y:180,v:'10',c:'#000',fill:'#000'},{x:540,y:180,v:'14',c:'#000',fill:'#000'},{x:10,y:240,v:'1',c:'#dc2626',fill:'#dc2626'}],
+           edges: [[0,1],[0,2],[1,3],[1,4],[2,5],[2,6],[3,7]], highlight: [1] },
+    },
+    heap: {
+      0: { nodes: [{x:300,y:20,v:'50',c:'#7c3aed'},{x:140,y:100,v:'30',c:'#7c3aed'},{x:460,y:100,v:'20',c:'#7c3aed'},{x:60,y:180,v:'15',c:'#7c3aed'},{x:220,y:180,v:'10',c:'#7c3aed'},{x:380,y:180,v:'8',c:'#7c3aed'},{x:500,y:180,v:'16',c:'#7c3aed'}],
+           edges: [[0,1],[0,2],[1,3],[1,4],[2,5],[2,6]], highlight: [] },
+      1: { nodes: [{x:300,y:20,v:'50',c:'#7c3aed'},{x:140,y:100,v:'30',c:'#7c3aed'},{x:460,y:100,v:'20',c:'#7c3aed'},{x:60,y:180,v:'15',c:'#7c3aed'},{x:220,y:180,v:'10',c:'#7c3aed'},{x:380,y:180,v:'8',c:'#7c3aed'},{x:500,y:180,v:'16',c:'#7c3aed'},{x:540,y:230,v:'60',c:'#d97706'}],
+           edges: [[0,1],[0,2],[1,3],[1,4],[2,5],[2,6],[6,7]], highlight: [7] },
+      2: { nodes: [{x:300,y:20,v:'50',c:'#7c3aed'},{x:140,y:100,v:'30',c:'#7c3aed'},{x:460,y:100,v:'20',c:'#7c3aed'},{x:60,y:180,v:'60',c:'#d97706'},{x:220,y:180,v:'10',c:'#7c3aed'},{x:380,y:180,v:'8',c:'#7c3aed'},{x:500,y:180,v:'16',c:'#7c3aed'},{x:540,y:230,v:'15',c:'#7c3aed'}],
+           edges: [[0,1],[0,2],[1,3],[1,4],[2,5],[2,6],[6,7]], highlight: [3] },
+      3: { nodes: [{x:300,y:20,v:'60',c:'#d97706'},{x:140,y:100,v:'50',c:'#7c3aed'},{x:460,y:100,v:'20',c:'#7c3aed'},{x:60,y:180,v:'30',c:'#7c3aed'},{x:220,y:180,v:'10',c:'#7c3aed'},{x:380,y:180,v:'8',c:'#7c3aed'},{x:500,y:180,v:'16',c:'#7c3aed'},{x:540,y:230,v:'15',c:'#7c3aed'}],
+           edges: [[0,1],[0,2],[1,3],[1,4],[2,5],[2,6],[6,7]], highlight: [0] },
+    },
+  };
+
+  const def = treeDefs[type];
+  // Show appropriate step — for types with fewer steps, clamp
+  const maxStep = Object.keys(def).length - 1;
+  const s = def[Math.min(stepIdx, maxStep)];
+
+  // Draw edges
+  ctx.strokeStyle = '#c4cdd9'; ctx.lineWidth = 1.5;
+  s.edges.forEach(([from, to]) => {
+    const nf = s.nodes[from], nt = s.nodes[to];
+    ctx.beginPath(); ctx.moveTo(nf.x, nf.y + 14); ctx.lineTo(nt.x, nt.y - 14); ctx.stroke();
+  });
+
+  // Draw nodes
+  s.nodes.forEach((n, i) => {
+    const isHL = s.highlight && s.highlight.includes(i);
+    ctx.beginPath(); ctx.arc(n.x, n.y, n.fill ? 13 : 14, 0, Math.PI*2);
+    ctx.fillStyle = n.fill || (isHL ? '#d1fae5' : '#f5f6f8');
+    ctx.fill();
+    ctx.strokeStyle = isHL ? '#16a34a' : n.c;
+    ctx.lineWidth = isHL ? 2.5 : 1.5;
+    ctx.stroke();
+    ctx.fillStyle = isHL ? '#16a34a' : n.c;
+    ctx.font = `600 11px "JetBrains Mono"`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(n.v, n.x, n.y);
+
+    // Label for traversal order
+    if (s.labels && s.labels[i]) {
+      ctx.fillStyle = '#94a3b8'; ctx.font = `9px "Noto Sans SC"`;
+      ctx.fillText(s.labels[i], n.x, n.y - 22);
+    }
+  });
+  document.getElementById('viz-hint').textContent = CHAPTERS.find(ch => ch.id === (type === 'general' ? 'binary-tree' : type === 'bst' ? 'bst' : type === 'avl' ? 'avl' : type === 'rbtree' ? 'rbtree' : 'heap')).steps[stepIdx].desc;
+}
+
+// ==========================================================================
+//  CANVAS GRAPH RENDERER
+// ==========================================================================
+function drawGraphCanvas(stepIdx) {
+  const c = document.getElementById('viz-container'); c.innerHTML = '';
+  const canvas = document.createElement('canvas');
+  canvas.width = 600; canvas.height = 240;
+  canvas.style.maxWidth = '100%';
+  c.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+
+  const positions = { A: [300,30], B: [180,130], C: [420,130], D: [240,200], E: [480,200] };
+  const levels = [
+    { visited: ['A'], queue: ['B','C'], edges: [['A','B'],['A','C']] },
+    { visited: ['A','B'], queue: ['C','D'], edges: [['A','B'],['A','C'],['B','D']] },
+    { visited: ['A','B','C'], queue: ['D','E'], edges: [['A','B'],['A','C'],['B','D'],['C','D'],['C','E']] },
+    { visited: ['A','B','C','D','E'], queue: [], edges: [['A','B'],['A','C'],['B','D'],['C','D'],['C','E']] },
+  ];
+  const level = levels[Math.min(stepIdx, 3)];
+
+  // Draw all possible edges faintly
+  const allEdges = [['A','B'],['A','C'],['B','D'],['C','D'],['C','E']];
+  allEdges.forEach(([a,b]) => {
+    ctx.beginPath(); ctx.moveTo(...positions[a]); ctx.lineTo(...positions[b]);
+    ctx.strokeStyle = level.edges.some(e => e[0]===a&&e[1]===b) ? '#7c3aed' : '#e2e8f0';
+    ctx.lineWidth = level.edges.some(e => e[0]===a&&e[1]===b) ? 2 : 1;
+    ctx.stroke();
+  });
+
+  // Draw nodes
+  Object.entries(positions).forEach(([label, [x,y]]) => {
+    const visited = level.visited.includes(label);
+    const inQueue = level.queue.includes(label);
+    ctx.beginPath(); ctx.arc(x, y, 16, 0, Math.PI*2);
+    ctx.fillStyle = visited ? '#ede9fe' : '#f5f6f8';
+    ctx.fill();
+    ctx.strokeStyle = visited ? '#16a34a' : inQueue ? '#d97706' : '#7c3aed';
+    ctx.lineWidth = visited ? 2.5 : 1.5;
+    ctx.stroke();
+    ctx.fillStyle = visited ? '#16a34a' : inQueue ? '#d97706' : '#7c3aed';
+    ctx.font = `600 12px "JetBrains Mono"`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(label, x, y);
+  });
+  document.getElementById('viz-hint').textContent = CHAPTERS[10].steps[stepIdx].desc;
+}
+
+// ==========================================================================
+//  ROUTING & RENDERING
+// ==========================================================================
+let currentChapter = null;
+let currentStep = 0;
+
+function showHome() {
+  document.getElementById('home-view').style.display = 'block';
+  document.getElementById('detail-view').classList.remove('active');
+  window.location.hash = '';
+  currentChapter = null;
+}
+
+function showChapter(chapterId) {
+  const ch = CHAPTERS.find(c => c.id === chapterId);
+  if (!ch) return;
+  currentChapter = ch;
+  currentStep = 0;
+  window.location.hash = ch.id;
+  document.getElementById('home-view').style.display = 'none';
+  document.getElementById('detail-view').classList.add('active');
+
+  // Nav
+  const sectionNames = { primer: '前置知识', linear: '线性结构', tree: '树形结构', hashgraph: '图与散列', algo: '算法' };
+  document.getElementById('detail-nav').innerHTML = `
+    <button class="back-btn" onclick="showHome()">←</button>
+    <span class="breadcrumb"><span class="accent">${sectionNames[ch.section]} /</span></span>
+    <span class="chapter-title">${ch.emoji} ${ch.title}</span>
+    <span class="spacer"></span>
+    <span class="progress">${ch.index + 1} / 14</span>
+    <span class="badge ${ch.diffClass}">${ch.difficulty}</span>
+  `;
+
+  // Concept
+  document.getElementById('concept-block').innerHTML = ch.concept;
+
+  // Viz
+  document.getElementById('step-indicator').textContent = `步骤 1 / ${ch.steps.length}`;
+  document.getElementById('btn-prev').disabled = true;
+  document.getElementById('btn-next').disabled = ch.steps.length <= 1;
+  ch.renderViz(0);
+
+  // Code
+  document.getElementById('code-compare').innerHTML = `
+    <div class="code-panel">
+      <div class="lang-label" style="color:var(--purple)">📋 伪代码</div>
+      <pre>${escapeHtml(ch.getPseudo())}</pre>
+    </div>
+    <div class="code-panel">
+      <div class="lang-label" style="color:var(--yellow)">⚡ JavaScript</div>
+      <pre>${escapeHtml(ch.getCode())}</pre>
+    </div>
+  `;
+
+  // Bottom nav
+  const prevCh = CHAPTERS.find(c => c.index === ch.index - 1);
+  const nextCh = CHAPTERS.find(c => c.index === ch.index + 1);
+  document.getElementById('bottom-nav').innerHTML = `
+    ${prevCh ? `<a onclick="showChapter('${prevCh.id}')">← ${prevCh.emoji} ${prevCh.title}</a>` : '<span></span>'}
+    ${nextCh ? `<a class="next" onclick="showChapter('${nextCh.id}')">${nextCh.emoji} ${nextCh.title} →</a>` : '<span></span>'}
+  `;
+}
+
+function stepNext() {
+  if (!currentChapter || currentStep >= currentChapter.steps.length - 1) return;
+  currentStep++;
+  updateStepUI();
+}
+
+function stepPrev() {
+  if (!currentChapter || currentStep <= 0) return;
+  currentStep--;
+  updateStepUI();
+}
+
+function stepReset() {
+  currentStep = 0;
+  updateStepUI();
+}
+
+function updateStepUI() {
+  const ch = currentChapter;
+  document.getElementById('step-indicator').textContent = `步骤 ${currentStep + 1} / ${ch.steps.length}`;
+  document.getElementById('btn-prev').disabled = currentStep === 0;
+  document.getElementById('btn-next').disabled = currentStep >= ch.steps.length - 1;
+  ch.renderViz(currentStep);
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ==========================================================================
+//  INIT
+// ==========================================================================
+function renderHomeCards() {
+  const sections = {
+    primer: document.getElementById('grid-primer'),
+    linear: document.getElementById('grid-linear'),
+    tree: document.getElementById('grid-tree'),
+    hashgraph: document.getElementById('grid-hashgraph'),
+    algo: document.getElementById('grid-algo'),
+  };
+  CHAPTERS.forEach(ch => {
+    const card = document.createElement('div');
+    card.className = `card ${ch.colorClass}`;
+    card.onclick = () => showChapter(ch.id);
+    card.innerHTML = `
+      <span class="emoji">${ch.emoji}</span>
+      <h3>${ch.title}</h3>
+      <p class="desc">${ch.desc}</p>
+      <span class="badge ${ch.diffClass}">${ch.difficulty}</span>
+    `;
+    sections[ch.section].appendChild(card);
+  });
+}
+
+document.getElementById('btn-prev').addEventListener('click', stepPrev);
+document.getElementById('btn-next').addEventListener('click', stepNext);
+document.getElementById('btn-reset').addEventListener('click', stepReset);
+
+renderHomeCards();
+
+// Handle browser back/forward
+window.addEventListener('hashchange', () => {
+  const hash = window.location.hash.slice(1);
+  if (!hash) showHome();
+  else {
+    const ch = CHAPTERS.find(c => c.id === hash);
+    if (ch) showChapter(ch.id);
+  }
+});
+
+// Load from hash on start
+if (window.location.hash) {
+  const hash = window.location.hash.slice(1);
+  const ch = CHAPTERS.find(c => c.id === hash);
+  if (ch) showChapter(ch.id);
+}
+</script>
+
+</body>
+</html>
